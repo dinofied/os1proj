@@ -16,7 +16,7 @@ void* MemoryAllocator::mem_alloc(size_t size) {
     void* allocatedAddress = (void*)((uint64)seeker + MEM_BLOCK_SIZE);
 
     MemoryChunk* newChunk = seeker;
-    newChunk = (MemoryChunk*)((uint64)newChunk + (size + 1) * MEM_BLOCK_SIZE); // mozda promeniti uint u char* ?! konsultuj silju
+    newChunk = (MemoryChunk*)((uint64)newChunk + (size + 1) * MEM_BLOCK_SIZE);
     newChunk->sizeInBlocks = seeker->sizeInBlocks - size - 1; // ukoliko je ostatak = 1; alociraj i njega
     newChunk->next = seeker->next;
     newChunk->prev = seeker->prev;

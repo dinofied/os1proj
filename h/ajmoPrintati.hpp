@@ -4,7 +4,7 @@
 #include "../lib/console.h"
 #include "../lib/hw.h"
 
-void printajBolan(uint64 number) {
+extern "C" void printajBolan(uint64 number) {
     char arr[64];
 
     int id = 0;
