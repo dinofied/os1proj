@@ -7,9 +7,9 @@
 #include "../lib/console.h"
 #include "../lib/hw.h"
 #include "../h/MemoryAllocator.hpp"
+#include "../h/ajmoPrintati.hpp"
 
 extern "C" void supervisorTrap();
-extern "C" void printajBolan(uint64 number);
 
 uint64 timer = 0;
 

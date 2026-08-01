@@ -4,21 +4,6 @@
 #include "../lib/console.h"
 #include "../lib/hw.h"
 
-extern "C" void printajBolan(uint64 number) {
-    char arr[64];
+void printajBolan(uint64 number);
 
-    int id = 0;
-
-    for (int j = 0; j < 64; j++) arr[j] = 0;
-
-    while (number > 0) {
-        int num = number % 10;
-        arr[id++] = '0' + num;
-        number /= 10;
-    }
-
-    while (--id >= 0) __putc(arr[id]);
-    __putc('\n');
-
-}
 #endif //PROJECT_BASE_AJMOPRINTATI_HPP
