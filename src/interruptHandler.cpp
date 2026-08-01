@@ -11,6 +11,8 @@
 extern "C" void supervisorTrap();
 extern "C" void printajBolan(uint64 number);
 
+uint64 timer = 0;
+
 extern "C" void handleSupervisorTrap() {
     uint64 scause;
     uint64 sepc;
@@ -18,20 +20,28 @@ extern "C" void handleSupervisorTrap() {
     __asm__ volatile ("csrr %0, sepc" : "=r" (sepc));
 
     switch (scause) {
-        case 0x8000000000000001:
+        case 0x8000000000000001UL:
             //timer
+            timer++;
+            if (timer % 10 == 0) {
+                printajBolan(timer/10);
+            }
+            __asm__ volatile ("csrc sip, 2");
             break;
         case 0x8000000000000009:
             //hardware
             break;
         case 0x02:
             //illegal instruction
+            printajBolan(scause);
             break;
         case 0x05:
             //unauthorized memory read
+            printajBolan(scause);
             break;
         case 0x07:
             //unauthorized memory write
+            printajBolan(scause);
             break;
         case 0x08:
             //redirect to 0x09
@@ -43,7 +53,7 @@ extern "C" void handleSupervisorTrap() {
             break;
     }
 
-    //ECALL: pushing pc to next instruction to prevent loop
+
 };
 
 #endif
