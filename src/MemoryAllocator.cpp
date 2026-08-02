@@ -26,11 +26,9 @@ void* MemoryAllocator::mem_alloc(size_t size) {
 
     seeker->sizeInBlocks = size + 1;
 
-    // __putc('A');
-    // __putc(':');
-    // __putc('\n');
-    // printFreeChunks(); // debugging
-    // __putc('\n');
+    __putc('A');
+    __putc(':');
+    printajBrojBolan((uint64)allocatedAddress);
     return allocatedAddress;
 };
 
@@ -55,11 +53,9 @@ int MemoryAllocator::mem_free(void* ptr) {
     tryToJoinChunks(newChunk);
     tryToJoinChunks(seeker);
 
-    // __putc('F');
-    // __putc(':');
-    // __putc('\n');
-    // printFreeChunks(); // debugging
-    // __putc('\n');
+    __putc('F');
+    __putc(':');
+    printajBrojBolan((uint64)ptr);
     return 0;
 };
 
@@ -79,7 +75,7 @@ int MemoryAllocator::tryToJoinChunks(MemoryChunk* chunk) {
 void MemoryAllocator::printFreeChunks() {
     MemoryChunk* surfer = freeMemChunks;
     while (surfer) {
-        printajBolan((uint64)surfer);
+        printajBrojBolan((uint64)surfer);
         surfer = surfer->next;
     }
 };

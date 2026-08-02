@@ -3,7 +3,7 @@
 //
 #include "../h/ajmoPrintati.hpp"
 
-void printajBolan(uint64 number) {
+void printajBrojBolan(uint64 number) {
     char arr[64];
 
     int id = 0;
@@ -20,3 +20,4 @@ void printajBolan(uint64 number) {
     __putc('\n');
 
 }
+

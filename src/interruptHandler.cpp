@@ -14,45 +14,81 @@ extern "C" void supervisorTrap();
 uint64 timer = 0;
 
 extern "C" void handleSupervisorTrap() {
-    uint64 scause;
-    uint64 sepc;
+    volatile uint64 arg1, arg2;
+    __asm__ volatile("mv %0, a1" : "=r" (arg1));
+    __asm__ volatile("mv %0, a2" : "=r" (arg2));
+    volatile uint64 scause;
+    volatile uint64 sepc;
+    volatile uint64 opCode;
     __asm__ volatile ("csrr %0, scause" : "=r" (scause));
     __asm__ volatile ("csrr %0, sepc" : "=r" (sepc));
+    __asm__ volatile ("mv %0, a0" : "=r" (opCode));
+
+    volatile uint64 ret;
+
+    printajBrojBolan(scause);
+    printajBrojBolan(opCode);
 
     switch (scause) {
-        case 0x8000000000000001UL:
+        case 0x8000000000000001:
             //timer
             timer++;
             if (timer % 10 == 0) {
-                printajBolan(timer/10);
+                //printajBolan(timer/10);
             }
             __asm__ volatile ("csrc sip, 2");
             break;
         case 0x8000000000000009:
             //hardware
             break;
-        case 0x02:
+        case 0x0000000000000002:
             //illegal instruction
-            printajBolan(scause);
+            printajBrojBolan(scause);
             break;
-        case 0x05:
+        case 0x0000000000000005:
             //unauthorized memory read
-            printajBolan(scause);
+            printajBrojBolan(scause);
             break;
-        case 0x07:
+        case 0x0000000000000007:
             //unauthorized memory write
-            printajBolan(scause);
+            printajBrojBolan(scause);
             break;
-        case 0x08:
-            //redirect to 0x09
-        case 0x09:
-            printajBolan(scause);
+        case 0x0000000000000008:
+        case 0x0000000000000009:
+
+
+            switch (opCode) {
+                //mem_alloc
+                case 0x01: {
+                    __putc('a');
+                    __putc('1');
+                    __putc('\n');
+                    printajBrojBolan(arg1);
+                    ret = (uint64)MemoryAllocator::getInstance().mem_alloc((size_t)arg1);
+                    printajBrojBolan(ret);
+                    __putc('\n');
+                    break;
+                }
+                //mem_free
+                case 0x02: {
+                    __putc('a');
+                    __putc('1');
+                    __putc('\n');
+                    printajBrojBolan(arg1);
+                    __putc('\n');
+                    ret = MemoryAllocator::getInstance().mem_free((void*)arg1);
+                    printajBrojBolan(ret);
+                    __putc('\n');
+                    break;
+                }
+            }
+
 
             sepc += 4;
             __asm__ volatile ("csrw sepc, %0" : : "r" (sepc));
             break;
     }
-
+    __asm__ volatile("mv a0, %0" : : "r" ((uint64)ret));
 
 };
 

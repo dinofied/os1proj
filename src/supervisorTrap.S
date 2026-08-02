@@ -40,6 +40,13 @@ supervisorTrap:
 
     call handleSupervisorTrap
 
+    csrr x16, scause
+    li x17, 0x08
+    beq x16, x17, skip_a0
+    li x17, 0x09
+    beq x16, x17, skip_a0
+    ld x10, 0x50(sp)
+skip_a0:
     ld x0, 0x00(sp)
     ld x1, 0x08(sp)
     ld x2, 0x10(sp)
@@ -50,7 +57,6 @@ supervisorTrap:
     ld x7, 0x38(sp)
     ld x8, 0x40(sp)
     ld x9, 0x48(sp)
-    ld x10, 0x50(sp)
     ld x11, 0x58(sp)
     ld x12, 0x60(sp)
     ld x13, 0x68(sp)
