@@ -21,3 +21,11 @@ void printajBrojBolan(uint64 number) {
 
 }
 
+
+void printajStringBolan(const char *string) {
+    while (*string != '\0') {
+        __putc(*string);
+        string++;
+    }
+    __putc('\n');
+}

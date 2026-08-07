@@ -6,5 +6,7 @@
 
 void printajBrojBolan(uint64 number);
 
+void printajStringBolan(const char *string);
+
 
 #endif //PROJECT_BASE_AJMOPRINTATI_HPP

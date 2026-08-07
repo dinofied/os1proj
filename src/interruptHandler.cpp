@@ -60,9 +60,7 @@ extern "C" void handleSupervisorTrap() {
             switch (opCode) {
                 //mem_alloc
                 case 0x01: {
-                    __putc('a');
-                    __putc('1');
-                    __putc('\n');
+                    printajStringBolan("a1");
                     printajBrojBolan(arg1);
                     ret = (uint64)MemoryAllocator::getInstance().mem_alloc((size_t)arg1);
                     printajBrojBolan(ret);
@@ -71,9 +69,7 @@ extern "C" void handleSupervisorTrap() {
                 }
                 //mem_free
                 case 0x02: {
-                    __putc('a');
-                    __putc('1');
-                    __putc('\n');
+                    printajStringBolan("a1");
                     printajBrojBolan(arg1);
                     __putc('\n');
                     ret = MemoryAllocator::getInstance().mem_free((void*)arg1);
