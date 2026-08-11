@@ -10,6 +10,8 @@
 
 class TCB {
 public:
+    ~TCB() {delete[] stack;}
+
     using Body = void (*)();
 
     static TCB* running;
@@ -19,6 +21,11 @@ public:
 
     bool isFinished();
     void setFinished(bool finished);
+
+    struct Context {
+        uint64 sp;
+        uint64 ra;
+    };
 
 private:
     explicit TCB(Body body) :
@@ -30,13 +37,9 @@ private:
     {
         if (body != nullptr) {Scheduler::putThread(this);}
     }
-    struct Context {
-        uint64 sp;
-        uint64 ra;
-    };
 
-    uint64* stack;
     Body body;
+    uint64* stack;
     Context context;
     bool finished;
 

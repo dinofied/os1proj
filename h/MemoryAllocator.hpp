@@ -25,7 +25,7 @@ private:
     int tryToJoinChunks(MemoryChunk* chunk);
 
     MemoryAllocator();
-    //static MemoryAllocator instance;
+    //static MemoryAllocator instance; // not sure if should be removed
 
     void printFreeChunks();
 
