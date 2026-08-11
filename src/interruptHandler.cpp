@@ -37,6 +37,7 @@ extern "C" void handleSupervisorTrap() {
     switch (scause) {
         case 0x8000000000000001:
             //timer
+            __asm__ volatile ("csrc sip, 2"); //enabling other interrupts
             timer++;
             if (timer % 10 == 0) {
                 printajStringBolan("Timer:");
@@ -50,7 +51,7 @@ extern "C" void handleSupervisorTrap() {
 
 
 
-            __asm__ volatile ("csrc sip, 2");
+
             break;
         case 0x8000000000000009:
             //hardware
