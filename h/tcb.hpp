@@ -5,10 +5,42 @@
 #ifndef PROJECT_BASE_TCB_HPP
 #define PROJECT_BASE_TCB_HPP
 
+#include "../lib/hw.h"
+#include "scheduler.hpp"
+
 class TCB {
 public:
+    using Body = void (*)();
+
+    static TCB* running;
+    static TCB* createThread(Body body);
+
+    static void yield();
+
+    bool isFinished();
+    void setFinished(bool finished);
 
 private:
+    explicit TCB(Body body) :
+        body(body),
+        stack(body != nullptr ? new uint64[DEFAULT_STACK_SIZE] : nullptr),
+        context({stack != 0 ? (uint64) &stack[DEFAULT_STACK_SIZE] : 0,
+                body != 0 ? (uint64) body : 0}),
+        finished(false)
+    {
+        if (body != nullptr) {Scheduler::putThread(this);}
+    }
+    struct Context {
+        uint64 sp;
+        uint64 ra;
+    };
+
+    uint64* stack;
+    Body body;
+    Context context;
+    bool finished;
+
+    static void dispatch();
 
 };
 

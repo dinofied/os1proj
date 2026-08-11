@@ -6,7 +6,8 @@
 #define PROJECT_BASE_SCHEDULER_HPP
 
 #include "list.hpp"
-#include "tcb.hpp"
+
+class TCB;
 
 class Scheduler {
 public:
