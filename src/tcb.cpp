@@ -4,12 +4,14 @@
 #include "../h/tcb.hpp"
 
 TCB* TCB::running = nullptr;
-extern "C" void pushRegisters();
-extern "C" void popRegisters();
-extern "C" void contextSwitch(TCB::Context* oldContext, TCB::Context* newContext);
+uint64 TCB::timeSliceCounter = 0;
 
-TCB* TCB::createThread(Body body) {
-    return new TCB(body);
+extern "C" void pushRegisters(); // from regUtil.S
+extern "C" void popRegisters(); // from regUtil.S
+extern "C" void contextSwitch(TCB::Context* oldContext, TCB::Context* newContext); // from contextSwitch.S
+
+TCB* TCB::createThread(Body body, uint64 timeSlice) {
+    return new TCB(body, timeSlice);
 };
 
 void TCB::yield() {
@@ -23,6 +25,10 @@ void TCB::yield() {
 bool TCB::isFinished(){return finished;};
 
 void TCB::setFinished(bool finished) {this->finished = finished;};
+
+uint64 TCB::getTimeSlice() {
+    return this->timeSlice;
+}
 
 void TCB::dispatch() {
     TCB* old = running;
