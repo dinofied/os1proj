@@ -11,9 +11,9 @@ extern "C" void pushRegisters(); // from regUtil.S
 extern "C" void popRegisters(); // from regUtil.S
 extern "C" void contextSwitch(TCB::Context* oldContext, TCB::Context* newContext); // from contextSwitch.S
 
-TCB* TCB::createThread(Body body) {
+TCB* TCB::createThread(Body body, void* arg) {
 
-    TCB* newTcb = new TCB(body, DEFAULT_TIME_SLICE);
+    TCB* newTcb = new TCB(body, arg, DEFAULT_TIME_SLICE);
 
     return newTcb;
 };
@@ -38,6 +38,10 @@ void TCB::dispatch() {
     contextSwitch(&old->context, &running->context);
 };
 
+void* TCB::getThreadArg() {
+    return arg;
+};
+
 
 void bombo() {
     __asm__ volatile("csrw sepc, ra");
@@ -51,7 +55,7 @@ void TCB::threadWrapper() {
     // __asm__ volatile ("csrw sepc, %0" :: "r" (pc));
     // __asm__ volatile ("sret");
     bombo();
-    running->body();
+    running->body(running->getThreadArg());
     running->setFinished(true);
     TCB::yield();
 }

@@ -9,11 +9,12 @@
 #include "../h/MemoryAllocator.hpp"
 #include "../h/ajmoPrintati.hpp"
 #include "../h/tcb.hpp"
+#include "../h/newdelete.hpp"
 
 extern "C" void supervisorTrap();
 
 extern "C" void handleSupervisorTrap() {
-    volatile uint64 arg1, arg2, arg3;
+    volatile uint64 arg1, arg2, arg3, arg4;
     volatile uint64 scause;
     volatile uint64 sepc;
     volatile uint64 opCode;
@@ -22,6 +23,7 @@ extern "C" void handleSupervisorTrap() {
     __asm__ volatile("mv %0, a1" : "=r" (arg1));
     __asm__ volatile("mv %0, a2" : "=r" (arg2));
     __asm__ volatile("mv %0, a3" : "=r" (arg3));
+    __asm__ volatile("mv %0, a4" : "=r" (arg4));
     __asm__ volatile ("csrr %0, scause" : "=r" (scause));
     __asm__ volatile ("csrr %0, sepc" : "=r" (sepc));
     __asm__ volatile ("csrr %0, sstatus" : "=r" (sstatus));
@@ -78,10 +80,17 @@ extern "C" void handleSupervisorTrap() {
                 }
                 //thread_create
                 case 0x11: {
+
                     break;
                 }
                 //thread_exit
                 case 0x12: {
+                    TCB::timeSliceCounter = 0;
+                    TCB::running->setFinished(true);
+                    TCB* old = TCB::running;
+                    TCB::dispatch();
+                    delete old; //?
+                    ret = 0;
                     break;
                 }
                 //thread_dispatch

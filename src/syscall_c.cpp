@@ -23,3 +23,17 @@ int mem_free(void* addr) {
     uint64 ret = ecall_wrapper(0x02, (uint64)addr);
     return (int)ret;
 };
+
+int thread_create(thread_t* handle, void(*start_routine)(void*), void* arg) {
+    uint64 ret = ecall_wrapper(0x11, (uint64)handle, (uint64)start_routine, (uint64)arg);
+    return (int)ret;
+};
+
+int thread_exit() {
+    uint64 ret = ecall_wrapper(0x12);
+    return (int)ret;
+};
+
+void thread_dispatch() {
+    ecall_wrapper(0x13);
+};

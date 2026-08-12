@@ -12,15 +12,17 @@ class TCB {
 public:
     ~TCB() {delete[] stack;}
 
-    using Body = void (*)();
+    using Body = void (*)(void*);
 
     static TCB* running;
-    static TCB* createThread(Body body);
+    static TCB* createThread(Body body, void* arg);
 
     static void yield();
 
     bool isFinished();
     void setFinished(bool finished);
+
+    void* getThreadArg();
 
     uint64 getTimeSlice();
 
@@ -45,11 +47,12 @@ public:
     static void dispatch();
 
 private:
-    explicit TCB(Body body, uint64 timeSlice) :
+    explicit TCB(Body body, void* arg, uint64 timeSlice) :
         body(body),
         stack(body != nullptr ? new uint64[DEFAULT_STACK_SIZE] : nullptr),
         context({stack != 0 ? (uint64) &stack[DEFAULT_STACK_SIZE] - 1 : 0,
                 (uint64) &threadWrapper}),
+        arg(arg),
         finished(false),
         timeSlice(timeSlice)
     {
@@ -59,6 +62,7 @@ private:
     Body body;
     uint64* stack;
     Context context;
+    void* arg;
     bool finished;
     uint64 timeSlice;
 
