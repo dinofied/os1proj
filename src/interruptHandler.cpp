@@ -13,7 +13,7 @@
 extern "C" void supervisorTrap();
 
 extern "C" void handleSupervisorTrap() {
-    volatile uint64 arg1, arg2;
+    volatile uint64 arg1, arg2, arg3;
     volatile uint64 scause;
     volatile uint64 sepc;
     volatile uint64 opCode;
@@ -21,6 +21,7 @@ extern "C" void handleSupervisorTrap() {
     __asm__ volatile ("mv %0, a0" : "=r" (opCode));
     __asm__ volatile("mv %0, a1" : "=r" (arg1));
     __asm__ volatile("mv %0, a2" : "=r" (arg2));
+    __asm__ volatile("mv %0, a3" : "=r" (arg3));
     __asm__ volatile ("csrr %0, scause" : "=r" (scause));
     __asm__ volatile ("csrr %0, sepc" : "=r" (sepc));
     __asm__ volatile ("csrr %0, sstatus" : "=r" (sstatus));
@@ -28,9 +29,6 @@ extern "C" void handleSupervisorTrap() {
 
     volatile uint64 ret;
 
-    // printajStringBolan("Scause, opCode:");
-    // printajBrojBolan(scause);
-    // printajBrojBolan(opCode);
 
     switch (scause) {
         case 0x8000000000000001:
