@@ -15,7 +15,7 @@ public:
     using Body = void (*)(void*);
 
     static TCB* running;
-    static TCB* createThread(Body body, void* arg);
+    static TCB* createThread(Body body, void* arg, uint64* stack_location);
 
     static void yield();
 
@@ -47,9 +47,9 @@ public:
     static void dispatch();
 
 private:
-    explicit TCB(Body body, void* arg, uint64 timeSlice) :
+    explicit TCB(Body body, void* arg, uint64* stack_location, uint64 timeSlice) :
         body(body),
-        stack(body != nullptr ? new uint64[DEFAULT_STACK_SIZE] : nullptr),
+        stack(stack_location == nullptr ? new uint64[DEFAULT_STACK_SIZE] : nullptr),
         context({stack != 0 ? (uint64) &stack[DEFAULT_STACK_SIZE] - 1 : 0,
                 (uint64) &threadWrapper}),
         arg(arg),

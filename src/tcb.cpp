@@ -11,9 +11,9 @@ extern "C" void pushRegisters(); // from regUtil.S
 extern "C" void popRegisters(); // from regUtil.S
 extern "C" void contextSwitch(TCB::Context* oldContext, TCB::Context* newContext); // from contextSwitch.S
 
-TCB* TCB::createThread(Body body, void* arg) {
+TCB* TCB::createThread(Body body, void* arg, uint64* stack_location) {
 
-    TCB* newTcb = new TCB(body, arg, DEFAULT_TIME_SLICE);
+    TCB* newTcb = new TCB(body, arg, stack_location, DEFAULT_TIME_SLICE);
 
     return newTcb;
 };
