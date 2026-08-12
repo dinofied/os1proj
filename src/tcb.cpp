@@ -2,6 +2,7 @@
 // Created by os on 8/11/26.
 //
 #include "../h/tcb.hpp"
+#include "../h/ajmoPrintati.hpp"
 
 TCB* TCB::running = nullptr;
 uint64 TCB::timeSliceCounter = 0;
@@ -10,16 +11,15 @@ extern "C" void pushRegisters(); // from regUtil.S
 extern "C" void popRegisters(); // from regUtil.S
 extern "C" void contextSwitch(TCB::Context* oldContext, TCB::Context* newContext); // from contextSwitch.S
 
-TCB* TCB::createThread(Body body, uint64 timeSlice) {
-    return new TCB(body, timeSlice);
+TCB* TCB::createThread(Body body) {
+
+    TCB* newTcb = new TCB(body, DEFAULT_TIME_SLICE);
+
+    return newTcb;
 };
 
 void TCB::yield() {
-    pushRegisters();
-
-    dispatch();
-
-    popRegisters();
+    __asm__ volatile ("ecall");
 };
 
 bool TCB::isFinished(){return finished;};
@@ -36,3 +36,22 @@ void TCB::dispatch() {
     running = Scheduler::getNextThread();
     contextSwitch(&old->context, &running->context);
 };
+
+
+void bombo() {
+    __asm__ volatile("csrw sepc, ra");
+    __asm__ volatile("sret");
+};
+
+void TCB::threadWrapper() {
+    // uint64 volatile pc;
+    // __asm__ volatile ("auipc %0, 0" : "=r" (pc));
+    // pc += 8;
+    // __asm__ volatile ("csrw sepc, %0" :: "r" (pc));
+    // __asm__ volatile ("sret");
+    bombo();
+    running->body();
+    running->setFinished(true);
+    TCB::yield();
+}
+

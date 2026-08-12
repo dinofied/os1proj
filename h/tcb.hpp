@@ -15,7 +15,7 @@ public:
     using Body = void (*)();
 
     static TCB* running;
-    static TCB* createThread(Body body, uint64 timeSlice);
+    static TCB* createThread(Body body);
 
     static void yield();
 
@@ -40,12 +40,16 @@ public:
         SSTATUS_SPP = (1 << 8)
     };
 
+    static uint64 timeSliceCounter;
+
+    static void dispatch();
+
 private:
     explicit TCB(Body body, uint64 timeSlice) :
         body(body),
         stack(body != nullptr ? new uint64[DEFAULT_STACK_SIZE] : nullptr),
         context({stack != 0 ? (uint64) &stack[DEFAULT_STACK_SIZE] : 0,
-                body != 0 ? (uint64) body : 0}),
+                (uint64) &threadWrapper}),
         finished(false),
         timeSlice(timeSlice)
     {
@@ -58,9 +62,7 @@ private:
     bool finished;
     uint64 timeSlice;
 
-    static uint64 timeSliceCounter;
-
-    static void dispatch();
+    static void threadWrapper();
 
 };
 

@@ -4,12 +4,12 @@
 
 #ifndef PROJECT_BASE_WORKERS_HPP
 #define PROJECT_BASE_WORKERS_HPP
-/*extern void workerBodyA();
+void workerBodyA();
 
-extern void workerBodyB();
+void workerBodyB();
 
-extern void workerBodyC();
+void workerBodyC();
 
-extern void workerBodyD();
-*/
+void workerBodyD();
+
 #endif //PROJECT_BASE_WORKERS_HPP

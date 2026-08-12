@@ -12,8 +12,6 @@
 
 extern "C" void supervisorTrap();
 
-uint64 timer = 0;
-
 extern "C" void handleSupervisorTrap() {
     volatile uint64 arg1, arg2;
     volatile uint64 scause;
@@ -30,28 +28,21 @@ extern "C" void handleSupervisorTrap() {
 
     volatile uint64 ret;
 
-    // printajStringBolan("Scause, opCode:");
-    // printajBrojBolan(scause);
-    // printajBrojBolan(opCode);
+    printajStringBolan("Scause, opCode:");
+    printajBrojBolan(scause);
+    printajBrojBolan(opCode);
 
     switch (scause) {
         case 0x8000000000000001:
             //timer
             __asm__ volatile ("csrc sip, 2"); //enabling other interrupts
-            timer++;
-            if (timer % 10 == 0) {
-                printajStringBolan("Timer:");
-                printajBrojBolan(timer/10);
-                __putc('\n');
+            TCB::timeSliceCounter++;
+            if (TCB::timeSliceCounter >= TCB::running->getTimeSlice()) {
+                TCB::timeSliceCounter = 0;
+                TCB::dispatch();
+                __asm__ volatile("csrw sepc, %0" : : "r" (sepc));
+                __asm__ volatile("csrw sstatus, %0" : : "r" (sstatus));
             }
-
-
-
-
-
-
-
-
             break;
         case 0x8000000000000009:
             //hardware
@@ -63,7 +54,8 @@ extern "C" void handleSupervisorTrap() {
             break;
         case 0x0000000000000005:
             //unauthorized memory read
-            printajBrojBolan(scause);
+            printajStringBolan("0x05 Unauthorized mem read:");
+            printajBrojBolan(sepc);
             break;
         case 0x0000000000000007:
             //unauthorized memory write
@@ -95,9 +87,12 @@ extern "C" void handleSupervisorTrap() {
                 }
             }
 
+            TCB::timeSliceCounter = 0;
+            TCB::dispatch();
 
             sepc += 4;
             __asm__ volatile ("csrw sepc, %0" : : "r" (sepc));
+            __asm__ volatile("csrw sstatus, %0" : : "r" (sstatus));
             break;
     }
     __asm__ volatile("mv a0, %0" : : "r" ((uint64)ret));
