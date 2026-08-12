@@ -48,7 +48,7 @@ private:
     explicit TCB(Body body, uint64 timeSlice) :
         body(body),
         stack(body != nullptr ? new uint64[DEFAULT_STACK_SIZE] : nullptr),
-        context({stack != 0 ? (uint64) &stack[DEFAULT_STACK_SIZE] : 0,
+        context({stack != 0 ? (uint64) &stack[DEFAULT_STACK_SIZE] - 1 : 0,
                 (uint64) &threadWrapper}),
         finished(false),
         timeSlice(timeSlice)

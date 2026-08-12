@@ -4,6 +4,8 @@
 
 #include "../h/scheduler.hpp"
 
+#include "../h/ajmoPrintati.hpp"
+
 List<TCB> Scheduler::waitingThreadQueue;
 
 TCB *Scheduler::getNextThread() {

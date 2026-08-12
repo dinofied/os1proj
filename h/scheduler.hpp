@@ -6,6 +6,7 @@
 #define PROJECT_BASE_SCHEDULER_HPP
 
 #include "list.hpp"
+#include "../lib/hw.h"
 
 class TCB;
 

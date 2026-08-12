@@ -4,6 +4,7 @@
 
 #ifndef PROJECT_BASE_LIST_HPP
 #define PROJECT_BASE_LIST_HPP
+#include "ajmoPrintati.hpp"
 
 template<typename T>
 class List
@@ -35,7 +36,7 @@ public:
 
     void addLast(T *data)
     {
-        Elem *elem = new Elem(data, 0);
+        Elem *elem = new Elem(data, nullptr);
         if (tail)
         {
             tail->next = elem;

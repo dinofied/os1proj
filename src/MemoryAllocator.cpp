@@ -13,11 +13,25 @@ void* MemoryAllocator::mem_alloc(size_t size) {
 
     if (!seeker) return nullptr;
 
+    //check so an empty block doesnt remain on its own
+    if (seeker->sizeInBlocks == size + 1) {
+        if (seeker->prev)
+            seeker->prev->next = seeker->next;
+        else
+            freeMemChunks = seeker->next;
+
+        if (seeker->next)
+            seeker->next->prev = seeker->prev;
+
+        seeker->sizeInBlocks = size + 1;
+        return (void*)((uint64)seeker + MEM_BLOCK_SIZE);
+    }
+
     void* allocatedAddress = (void*)((uint64)seeker + MEM_BLOCK_SIZE);
 
     MemoryChunk* newChunk = seeker;
     newChunk = (MemoryChunk*)((uint64)newChunk + (size + 1) * MEM_BLOCK_SIZE);
-    newChunk->sizeInBlocks = seeker->sizeInBlocks - size - 1; // ukoliko je ostatak = 1; alociraj i njega
+    newChunk->sizeInBlocks = seeker->sizeInBlocks - size - 1;
     newChunk->next = seeker->next;
     newChunk->prev = seeker->prev;
     if (newChunk->prev) newChunk->prev->next = newChunk;
@@ -26,9 +40,7 @@ void* MemoryAllocator::mem_alloc(size_t size) {
 
     seeker->sizeInBlocks = size + 1;
 
-    __putc('A');
-    __putc(':');
-    printajBrojBolan((uint64)allocatedAddress);
+
     return allocatedAddress;
 };
 
@@ -53,9 +65,7 @@ int MemoryAllocator::mem_free(void* ptr) {
     tryToJoinChunks(newChunk);
     tryToJoinChunks(seeker);
 
-    __putc('F');
-    __putc(':');
-    printajBrojBolan((uint64)ptr);
+
     return 0;
 };
 
@@ -81,15 +91,10 @@ void MemoryAllocator::printFreeChunks() {
 };
 
 MemoryAllocator::MemoryAllocator() {
-    //__putc('b');
     size_t size = (((uint64)HEAP_END_ADDR  - 1) - (uint64)HEAP_START_ADDR);
     size = size / MEM_BLOCK_SIZE;
     freeMemChunks = (MemoryChunk*)HEAP_START_ADDR;
     freeMemChunks->sizeInBlocks = size;
     freeMemChunks->next = nullptr;
     freeMemChunks->prev = nullptr;
-    // __putc('c');
-    //
-    // printajBolan((uint64)size);
-    // __putc('\n');
 };

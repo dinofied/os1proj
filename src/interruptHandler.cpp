@@ -18,19 +18,19 @@ extern "C" void handleSupervisorTrap() {
     volatile uint64 sepc;
     volatile uint64 opCode;
     volatile uint64 sstatus;
+    __asm__ volatile ("mv %0, a0" : "=r" (opCode));
     __asm__ volatile("mv %0, a1" : "=r" (arg1));
     __asm__ volatile("mv %0, a2" : "=r" (arg2));
     __asm__ volatile ("csrr %0, scause" : "=r" (scause));
     __asm__ volatile ("csrr %0, sepc" : "=r" (sepc));
-    __asm__ volatile ("mv %0, a0" : "=r" (opCode));
     __asm__ volatile ("csrr %0, sstatus" : "=r" (sstatus));
 
 
     volatile uint64 ret;
 
-    printajStringBolan("Scause, opCode:");
-    printajBrojBolan(scause);
-    printajBrojBolan(opCode);
+    // printajStringBolan("Scause, opCode:");
+    // printajBrojBolan(scause);
+    // printajBrojBolan(opCode);
 
     switch (scause) {
         case 0x8000000000000001:
@@ -50,7 +50,8 @@ extern "C" void handleSupervisorTrap() {
             break;
         case 0x0000000000000002:
             //illegal instruction
-            printajBrojBolan(scause);
+            printajStringBolan("0x02 Illegal instruction:");
+            printajBrojBolan(sepc);
             break;
         case 0x0000000000000005:
             //unauthorized memory read
@@ -59,7 +60,8 @@ extern "C" void handleSupervisorTrap() {
             break;
         case 0x0000000000000007:
             //unauthorized memory write
-            printajBrojBolan(scause);
+            printajStringBolan("0x07 Unauthorized mem write:");
+            printajBrojBolan(sepc);
             break;
         case 0x0000000000000008:
         case 0x0000000000000009:
@@ -68,27 +70,22 @@ extern "C" void handleSupervisorTrap() {
             switch (opCode) {
                 //mem_alloc
                 case 0x01: {
-                    printajStringBolan("a1");
-                    printajBrojBolan(arg1);
                     ret = (uint64)MemoryAllocator::getInstance().mem_alloc((size_t)arg1);
-                    printajBrojBolan(ret);
-                    __putc('\n');
                     break;
                 }
                 //mem_free
                 case 0x02: {
-                    printajStringBolan("a1");
-                    printajBrojBolan(arg1);
-                    __putc('\n');
                     ret = MemoryAllocator::getInstance().mem_free((void*)arg1);
-                    printajBrojBolan(ret);
-                    __putc('\n');
+                    break;
+                }
+                //thread dispatch
+                case 0x13: {
+                    TCB::timeSliceCounter = 0;
+                    TCB::dispatch();
                     break;
                 }
             }
 
-            TCB::timeSliceCounter = 0;
-            TCB::dispatch();
 
             sepc += 4;
             __asm__ volatile ("csrw sepc, %0" : : "r" (sepc));

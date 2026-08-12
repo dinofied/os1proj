@@ -15,25 +15,25 @@ int main() {
     TCB* threads[5];
 
     threads[0] = TCB::createThread(nullptr);
-
     TCB::running = threads[0];
 
-    __asm__ volatile ("csrs sstatus, 2"); //enabling sie
-
     threads[1] = TCB::createThread(workerBodyA);
-
+    printajStringBolan("ThreadA created\n");
     threads[2] = TCB::createThread(workerBodyB);
-
+    printajStringBolan("ThreadB created\n");
     threads[3] = TCB::createThread(workerBodyC);
     printajStringBolan("ThreadC created\n");
     threads[4] = TCB::createThread(workerBodyD);
     printajStringBolan("ThreadD created\n");
+
+    __asm__ volatile ("csrs sstatus, 2"); //enabling sie
 
     while (!(threads[1]->isFinished() &&
              threads[2]->isFinished() &&
              threads[3]->isFinished() &&
              threads[4]->isFinished()))
     {
+
         TCB::yield();
     }
 
