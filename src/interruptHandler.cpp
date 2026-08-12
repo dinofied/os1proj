@@ -76,12 +76,25 @@ extern "C" void handleSupervisorTrap() {
                     ret = MemoryAllocator::getInstance().mem_free((void*)arg1);
                     break;
                 }
-                //thread dispatch
+                //thread_create
+                case 0x11: {
+                    break;
+                }
+                //thread_exit
+                case 0x12: {
+                    break;
+                }
+                //thread_dispatch
                 case 0x13: {
                     TCB::timeSliceCounter = 0;
                     TCB::dispatch();
                     break;
                 }
+                //thread sleep
+                case 0x31: {
+                    break;
+                }
+
             }
 
 
