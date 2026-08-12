@@ -4,12 +4,12 @@
 
 #ifndef PROJECT_BASE_WORKERS_HPP
 #define PROJECT_BASE_WORKERS_HPP
-void workerBodyA();
+void workerBodyA(void* arg);
 
-void workerBodyB();
+void workerBodyB(void* arg);
 
-void workerBodyC();
+void workerBodyC(void* arg);
 
-void workerBodyD();
+void workerBodyD(void* arg);
 
 #endif //PROJECT_BASE_WORKERS_HPP
