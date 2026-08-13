@@ -80,7 +80,9 @@ extern "C" void handleSupervisorTrap() {
                 }
                 //thread_create
                 case 0x11: {
-                    //TCB* newThread = TCB::createThread((void(*)(void*))arg2, (void*)arg3, (uint64*)arg4);
+                    TCB* newThread = TCB::createThread((void(*)(void*))arg2, (void*)arg3, (uint64*)arg4);
+                    newThread == nullptr ? ret = -1 : ret = 0;
+                    *(TCB**)arg1 = newThread;
                     break;
                 }
                 //thread_exit

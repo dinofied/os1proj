@@ -26,6 +26,8 @@ public:
 
     uint64 getTimeSlice();
 
+    static void setRunning(TCB* newRunning);
+
     struct Context {
         uint64 sp;
         uint64 ra;
@@ -49,8 +51,8 @@ public:
 private:
     explicit TCB(Body body, void* arg, uint64* stack_location, uint64 timeSlice) :
         body(body),
-        stack(stack_location == nullptr ? new uint64[DEFAULT_STACK_SIZE] : nullptr),
-        context({stack != 0 ? (uint64) &stack[DEFAULT_STACK_SIZE] - 1 : 0,
+        stack(stack_location == nullptr ? new uint64[DEFAULT_STACK_SIZE] : stack_location),
+        context({stack != 0 ? (uint64) &stack[DEFAULT_STACK_SIZE] : 0,
                 (uint64) &threadWrapper}),
         arg(arg),
         finished(false),

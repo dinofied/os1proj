@@ -15,6 +15,7 @@ TCB* TCB::createThread(Body body, void* arg, uint64* stack_location) {
 
     TCB* newTcb = new TCB(body, arg, stack_location, DEFAULT_TIME_SLICE);
 
+
     return newTcb;
 };
 
@@ -41,6 +42,10 @@ void TCB::dispatch() {
 void* TCB::getThreadArg() {
     return arg;
 };
+
+void TCB::setRunning(TCB *newRunning) {
+    running = newRunning;
+}
 
 
 void bombo() {

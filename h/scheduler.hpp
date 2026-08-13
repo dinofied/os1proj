@@ -15,9 +15,10 @@ public:
 
     static TCB* getNextThread();
     static void putThread(TCB* tcb);
-
+    static uint64 getWaitingThreadCount();
 
 private:
+    static uint64 waitingThreadCount;
     static List<TCB> waitingThreadQueue;
 };
 

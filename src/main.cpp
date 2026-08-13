@@ -11,30 +11,42 @@ extern "C" void supervisorTrap();
 int main() {
     __asm__ volatile ("csrw stvec, %[vector]" : : [vector] "r" (&supervisorTrap)); //setting interrupt routine
 
-    TCB* threads[5];
+    thread_t* threads[5];
+    for (int i = 0; i < 5; i++) threads[i] = new thread_t;
 
-    threads[0] = TCB::createThread(nullptr, nullptr, nullptr);
-    TCB::running = threads[0];
+    thread_create(threads[0], nullptr, nullptr);
+    TCB::setRunning((TCB*)*threads[0]);
 
-    threads[1] = TCB::createThread(workerBodyA, nullptr, nullptr);
-    printajStringBolan("ThreadA created\n");
-    threads[2] = TCB::createThread(workerBodyB, nullptr, nullptr);
-    printajStringBolan("ThreadB created\n");
-    threads[3] = TCB::createThread(workerBodyC, nullptr, nullptr);
-    printajStringBolan("ThreadC created\n");
-    threads[4] = TCB::createThread(workerBodyD, nullptr, nullptr);
-    printajStringBolan("ThreadD created\n");
+    int ret;
+
+    ret = thread_create(threads[1], workerBodyA, nullptr);
+    if (ret == 0) printajStringBolan("ThreadA created\n");
+    else printajStringBolan("ThreaA ERROR\n");
+
+    ret = thread_create(threads[2], workerBodyB, nullptr);
+    if (ret == 0) printajStringBolan("ThreadB created\n");
+    else printajStringBolan("ThreaB ERROR\n");
+
+    ret = thread_create(threads[3], workerBodyC, nullptr);
+    if (ret == 0) printajStringBolan("ThreadC created\n");
+    else printajStringBolan("ThreaC ERROR\n");
+
+    ret = thread_create(threads[4], workerBodyD, nullptr);
+    if (ret == 0) printajStringBolan("ThreadD created\n");
+    else printajStringBolan("ThreaD ERROR\n");
 
     __asm__ volatile ("csrs sstatus, 2"); //enabling sie
 
-    while (!(threads[1]->isFinished() &&
-             threads[2]->isFinished() &&
-             threads[3]->isFinished() &&
-             threads[4]->isFinished()))
-    {
+    // while (!((TCB*)*threads[1]->isFinished() &&
+    //          (TCB*)*threads[2]->isFinished() &&
+    //          (TCB*)*threads[3]->isFinished() &&
+    //          (TCB*)*threads[4]->isFinished()))
+    // {
+    //
+    //     TCB::yield();
+    // }
 
-        TCB::yield();
-    }
+    while (Scheduler::getWaitingThreadCount() > 0) {TCB::yield();};
 
     for (auto &thread: threads)
     {

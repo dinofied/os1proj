@@ -26,7 +26,7 @@ int mem_free(void* addr) {
 
 int thread_create(thread_t* handle, void(*start_routine)(void*), void* arg) {
     uint64* stack_location = (uint64*)mem_alloc(DEFAULT_STACK_SIZE);
-    uint64 ret = ecall_wrapper(0x11, (uint64)handle, (uint64)start_routine, (uint64)arg, *stack_location);
+    uint64 ret = ecall_wrapper(0x11, (uint64)handle, (uint64)start_routine, (uint64)arg, (uint64)stack_location);
     return (int)ret;
 };
 
