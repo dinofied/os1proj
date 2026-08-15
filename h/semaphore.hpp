@@ -8,28 +8,28 @@
 #include "list.hpp"
 #include "tcb.hpp"
 
-class semaphore {
+class Semaphore {
 public:
 
-    semaphore* createSemaphore(uint64 tokenCount);
+    Semaphore* createSemaphore(uint64 tokenCount);
 
     int signal(uint64 tokenCount = 1);
     int wait(uint64 tokenCount = 1);
 
     int close();
 
-    int blockCurrentThread();
-
-    int getSemWaitingCount();
+    void blockCurrentThread();
+    void unblockThread();
 
 private:
-    semaphore(uint64 tokenCount) : tokenCount(tokenCount), semWaitingCount(0), isClosed(false) {};
+    Semaphore(uint64 tokenCount) : remainingTokens(tokenCount), isClosed(false) {};
 
     List<TCB> semWaitingThreads;
 
-    uint64 tokenCount;
-    uint64 semWaitingCount;
+    uint64 remainingTokens;
     bool isClosed;
+
+    ~Semaphore() {close();};
 
 };
 

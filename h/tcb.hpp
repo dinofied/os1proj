@@ -33,6 +33,8 @@ public:
         uint64 ra;
     };
 
+    Context context;
+
     enum BitMaskSip {
         SIP_SSIP = (1 << 1),
         SIP_SEIP = (1 << 9)
@@ -63,7 +65,6 @@ private:
 
     Body body;
     uint64* stack;
-    Context context;
     void* arg;
     bool finished;
     uint64 timeSlice;
