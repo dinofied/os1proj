@@ -27,7 +27,7 @@ int sem_close(sem_t handle);
 int sem_wait(sem_t id);
 int sem_signal(sem_t id);
 int sem_wait_n(sem_t id, unsigned n);
-int sem_sleep_n(sem_t id, unsigned n);
+int sem_signal_n(sem_t id, unsigned n);
 
 //int time_sleep();
 

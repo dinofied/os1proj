@@ -7,6 +7,7 @@
 void workerBodyA(void* arg);
 
 void workerBodyB(void* arg);
+void workerBodyBB(void* arg);
 
 void workerBodyC(void* arg);
 

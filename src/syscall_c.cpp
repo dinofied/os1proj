@@ -59,7 +59,7 @@ int sem_wait_n(sem_t id, unsigned n) {
     uint64 ret = ecall_wrapper(0x25, (uint64)id,(uint64)n);
     return ret;
 };
-int sem_sleep_n(sem_t id, unsigned n) {
+int sem_signal_n(sem_t id, unsigned n) {
     uint64 ret = ecall_wrapper(0x26, (uint64)id,(uint64)n);
     return ret;
 };

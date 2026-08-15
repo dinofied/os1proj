@@ -5,11 +5,15 @@
 #include "../lib/hw.h"
 #include "../h/tcb.hpp"
 #include "../h/ajmoPrintati.hpp"
+#include "../h/syscall_c.hpp"
 
 void workerBodyA(void* arg)
 {
+    sem_t sem = (sem_t)arg;
+
     for (uint64 i = 0; i < 10; i++)
     {
+        if (sem) sem_wait_n(sem, 1);
         printajStringBolan("A: i=");
         printajBrojBolan(i);
         printajStringBolan("\n");
@@ -21,13 +25,16 @@ void workerBodyA(void* arg)
             }
 //            TCB::yield();
         }
+        if (sem) sem_signal_n(sem, 1);
     }
 }
 
 void workerBodyB(void* arg)
 {
+    sem_t sem = (sem_t)arg;
     for (uint64 i = 0; i < 16; i++)
     {
+        if (sem) sem_wait_n(sem, 2);
         printajStringBolan("B: i=");
         printajBrojBolan(i);
         printajStringBolan("\n");
@@ -39,6 +46,28 @@ void workerBodyB(void* arg)
             }
 //            TCB::yield();
         }
+        if (sem) sem_signal_n(sem, 2);
+    }
+}
+
+void workerBodyBB(void* arg)
+{
+    sem_t sem = (sem_t)arg;
+    for (uint64 i = 0; i < 16; i++)
+    {
+        if (sem) sem_wait_n(sem, 3);
+        printajStringBolan("BB: i=");
+        printajBrojBolan(i);
+        printajStringBolan("\n");
+        for (uint64 j = 0; j < 10000; j++)
+        {
+            for (uint64 k = 0; k < 30000; k++)
+            {
+                // busy wait
+            }
+            //            TCB::yield();
+        }
+        if (sem) sem_signal_n(sem, 3);
     }
 }
 
