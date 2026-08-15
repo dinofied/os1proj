@@ -45,19 +45,17 @@ void TCB::setRunning(TCB *newRunning) {
     running = newRunning;
 }
 
-
 void bombo() {
     __asm__ volatile("csrw sepc, ra");
     __asm__ volatile("sret");
 };
 
 void TCB::threadWrapper() {
-    // uint64 volatile pc;
-    // __asm__ volatile ("auipc %0, 0" : "=r" (pc));
-    // pc += 8;
-    // __asm__ volatile ("csrw sepc, %0" :: "r" (pc));
-    // __asm__ volatile ("sret");
-    bombo();
+    uint64 volatile pc;
+    __asm__ volatile ("auipc %0, 0" : "=r" (pc));
+    pc += 32;
+    __asm__ volatile ("csrw sepc, %0" :: "r" (pc));
+    __asm__ volatile ("sret");
     running->body(running->getThreadArg());
     running->setFinished(true);
     TCB::yield();
