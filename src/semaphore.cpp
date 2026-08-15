@@ -12,37 +12,65 @@ Semaphore* Semaphore::createSemaphore(uint64 tokenCount) {
 };
 
 int Semaphore::signal(uint64 tokenCount) {
+    if (isClosed) return -1;
     remainingTokens += tokenCount;
-    if (tokenCount > 0) unblockThread();
+    while (blockedThreadCount > 0 && !alignFirstThreadWithTokens(remainingTokens)) unblockThread();
     return 0;
 };
 
 int Semaphore::wait(uint64 tokenCount) {
     if (isClosed) return -1;
-    while (!isClosed && remainingTokens < tokenCount) {
-        blockCurrentThread();
+    if (remainingTokens >= tokenCount) {
+        remainingTokens -= tokenCount;
+        return 0;
     }
+    blockCurrentThread(tokenCount);
     //if thread wakes up by close()
     if (isClosed) return -1;
 
-    remainingTokens -= tokenCount;
-    if (semWaitingThreads.peekFirst() && remainingTokens > 0) unblockThread();
     return 0;
 };
 
 int Semaphore::close() {
     isClosed = true;
-    while (semWaitingThreads.peekFirst()) {unblockThread();};
+    while (semBlockedThreads.peekFirst()) {
+        tkTCB* curr = semBlockedThreads.removeFirst();
+        Scheduler::putThread(curr->tcb);
+        delete curr;
+    };
     return 0;
 };
 
-void Semaphore::blockCurrentThread() {
-    TCB* old = TCB::running;
-    if (!old->isFinished()) {semWaitingThreads.addLast(old);}
+void Semaphore::blockCurrentThread(uint64 threadTokens) {
+    TCB* oldTCB = TCB::running;
+    tkTCB* newTkTCB = new tkTCB(oldTCB, threadTokens);
+    semBlockedThreads.addLast(newTkTCB);
+    blockedThreadCount++;
     TCB::running = Scheduler::getNextThread();
-    contextSwitch(&old->TCB::context, &TCB::running->context);
+    contextSwitch(&oldTCB->TCB::context, &TCB::running->context);
 };
 void Semaphore::unblockThread() {
-    TCB* blocked = semWaitingThreads.removeFirst();
-    if (blocked != 0) Scheduler::putThread(blocked);
+    tkTCB* blocked = semBlockedThreads.removeFirst();
+    if (!blocked) return;
+    TCB* blockedTCB = blocked->tcb;
+    remainingTokens -= blocked->requiredTokens;
+    blockedThreadCount--;
+    delete blocked;
+    Scheduler::putThread(blockedTCB);
 };
+
+int Semaphore::alignFirstThreadWithTokens(uint64 tokenCount) {
+
+    for (uint64 i = 0; i < blockedThreadCount; i++) {
+        tkTCB* curr = semBlockedThreads.removeFirst();
+        if (!curr) return -1;
+
+        if (curr->requiredTokens <= tokenCount) {
+            semBlockedThreads.addFirst(curr);
+            return 0;
+        }
+        semBlockedThreads.addLast(curr);
+    }
+
+    return -1;
+}

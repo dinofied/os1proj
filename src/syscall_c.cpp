@@ -38,3 +38,28 @@ int thread_exit() {
 void thread_dispatch() {
     ecall_wrapper(0x13);
 };
+
+int sem_open(sem_t* handle, unsigned init) {
+    uint64 ret = ecall_wrapper(0x21, (uint64)handle,(uint64)init);
+    return ret;
+};
+int sem_close(sem_t handle) {
+    uint64 ret = ecall_wrapper(0x22, (uint64)handle);
+    return ret;
+};
+int sem_wait(sem_t id) {
+    uint64 ret = ecall_wrapper(0x23, (uint64)id);
+    return ret;
+};
+int sem_signal(sem_t id) {
+    uint64 ret = ecall_wrapper(0x24, (uint64)id);
+    return ret;
+};
+int sem_wait_n(sem_t id, unsigned n) {
+    uint64 ret = ecall_wrapper(0x25, (uint64)id,(uint64)n);
+    return ret;
+};
+int sem_sleep_n(sem_t id, unsigned n) {
+    uint64 ret = ecall_wrapper(0x26, (uint64)id,(uint64)n);
+    return ret;
+};

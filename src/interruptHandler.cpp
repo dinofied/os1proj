@@ -9,6 +9,7 @@
 #include "../h/MemoryAllocator.hpp"
 #include "../h/ajmoPrintati.hpp"
 #include "../h/tcb.hpp"
+#include "../h/semaphore.hpp"
 #include "../h/newdelete.hpp"
 
 extern "C" void supervisorTrap();
@@ -99,6 +100,43 @@ extern "C" void handleSupervisorTrap() {
                 case 0x13: {
                     TCB::timeSliceCounter = 0;
                     TCB::dispatch();
+                    break;
+                }
+                //sem_open
+                case 0x21: {
+                    Semaphore* newSem = Semaphore::createSemaphore(arg2);
+                    newSem == nullptr ? ret = -1 : ret = 0;
+                    *(Semaphore**)arg1 = newSem;
+                    break;
+                }
+                //sem_close
+                case 0x22: {
+                    Semaphore* sem = (Semaphore*)arg1;
+                    ret = sem->close();
+                    break;
+                }
+                //sem_wait
+                case 0x23: {
+                    Semaphore* sem = (Semaphore*)arg1;
+                    ret = sem->wait();
+                    break;
+                }
+                //sem_signal
+                case 0x24: {
+                    Semaphore* sem = (Semaphore*)arg1;
+                    ret = sem->signal();
+                    break;
+                }
+                //sem_wait_n
+                case 0x25: {
+                    Semaphore* sem = (Semaphore*)arg1;
+                    ret = sem->wait(arg2);
+                    break;
+                }
+                //sem_signal_n
+                case 0x26: {
+                    Semaphore* sem = (Semaphore*)arg1;
+                    ret = sem->signal(arg2);
                     break;
                 }
                 //thread sleep

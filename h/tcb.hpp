@@ -54,12 +54,12 @@ private:
     explicit TCB(Body body, void* arg, uint64* stack_location, uint64 timeSlice) :
         body(body),
         stack(stack_location == nullptr ? new uint64[DEFAULT_STACK_SIZE] : stack_location),
-        context({stack != 0 ? (uint64) &stack[DEFAULT_STACK_SIZE] : 0,
-                (uint64) &threadWrapper}),
         arg(arg),
         finished(false),
         timeSlice(timeSlice)
     {
+        context.sp = (stack != 0 ? (uint64) &stack[DEFAULT_STACK_SIZE] : 0);
+        context.ra = (uint64) &threadWrapper;
         if (body != nullptr) {Scheduler::putThread(this);}
     }
 
