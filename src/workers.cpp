@@ -26,6 +26,7 @@ void workerBodyA(void* arg)
 //            TCB::yield();
         }
         if (sem) sem_signal_n(sem, 1);
+        time_sleep(100);
     }
 }
 

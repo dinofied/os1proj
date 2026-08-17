@@ -10,6 +10,7 @@
 #include "../h/ajmoPrintati.hpp"
 #include "../h/tcb.hpp"
 #include "../h/semaphore.hpp"
+#include "../h/scheduler.hpp"
 #include "../h/newdelete.hpp"
 
 extern "C" void supervisorTrap();
@@ -37,6 +38,7 @@ extern "C" void handleSupervisorTrap() {
         case 0x8000000000000001:
             //timer
             __asm__ volatile ("csrc sip, 2"); //enabling other interrupts
+            Scheduler::reduceSleepingTime();
             TCB::timeSliceCounter++;
             if (TCB::timeSliceCounter >= TCB::running->getTimeSlice()) {
                 TCB::timeSliceCounter = 0;
@@ -141,6 +143,7 @@ extern "C" void handleSupervisorTrap() {
                 }
                 //thread sleep
                 case 0x31: {
+                    ret = Scheduler::putToSleep(arg1);
                     break;
                 }
 

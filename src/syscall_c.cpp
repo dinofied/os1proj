@@ -63,3 +63,8 @@ int sem_signal_n(sem_t id, unsigned n) {
     uint64 ret = ecall_wrapper(0x26, (uint64)id,(uint64)n);
     return ret;
 };
+
+int time_sleep(time_t time) {
+    uint64 ret = ecall_wrapper(0x31, (uint64)time);
+    return ret;
+}
