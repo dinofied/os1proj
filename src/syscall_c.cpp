@@ -68,3 +68,12 @@ int time_sleep(time_t time) {
     uint64 ret = ecall_wrapper(0x31, (uint64)time);
     return ret;
 }
+
+char getc() {
+    uint64 ret = ecall_wrapper(0x41);
+    return (char)ret;
+}
+
+void putc(char c) {
+    ecall_wrapper(0x42, (uint64)c);
+}

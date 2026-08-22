@@ -31,6 +31,9 @@ int sem_signal(sem_t id);
 int sem_wait_n(sem_t id, unsigned n);
 int sem_signal_n(sem_t id, unsigned n);
 
+char getc();
+void putc(char c);
+
 int time_sleep(time_t time);
 
 #endif //PROJECT_BASE_SYSCALL_C_HPP

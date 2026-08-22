@@ -11,6 +11,7 @@
 #include "../h/tcb.hpp"
 #include "../h/semaphore.hpp"
 #include "../h/scheduler.hpp"
+#include "../h/console.hpp"
 #include "../h/newdelete.hpp"
 
 extern "C" void supervisorTrap();
@@ -37,7 +38,6 @@ extern "C" void handleSupervisorTrap() {
     switch (scause) {
         case 0x8000000000000001:
             //timer
-            __asm__ volatile ("csrc sip, 2"); //enabling other interrupts
             Scheduler::reduceSleepingTime();
             TCB::timeSliceCounter++;
             if (TCB::timeSliceCounter >= TCB::running->getTimeSlice()) {
@@ -46,10 +46,19 @@ extern "C" void handleSupervisorTrap() {
                 __asm__ volatile("csrw sepc, %0" : : "r" (sepc));
                 __asm__ volatile("csrw sstatus, %0" : : "r" (sstatus));
             }
+            __asm__ volatile ("csrc sip, 2"); //enabling other interrupts
             break;
         case 0x8000000000000009:
             //hardware
-            console_handler();
+            int plic = plic_claim();
+            if (plic != 0x0a) {
+                printajStringBolan("Hardware error.");
+                break;
+            }
+
+
+            plic_complete(plic);
+            __asm__ volatile ("csrc sip, 2"); //enabling other interrupts
             break;
         case 0x0000000000000002:
             //illegal instruction
@@ -146,9 +155,17 @@ extern "C" void handleSupervisorTrap() {
                     ret = Scheduler::putToSleep(arg1);
                     break;
                 }
-
+                //get_c
+                case 0x41: {
+                    ret = Buffer::inputBuffer->get();
+                    break;
+                }
+                //put_c
+                case 0x42: {
+                    Buffer::outputBuffer->put((char)arg1);
+                    break;
+                }
             }
-
 
             sepc += 4;
             __asm__ volatile ("csrw sepc, %0" : : "r" (sepc));
