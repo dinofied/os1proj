@@ -77,3 +77,7 @@ char getc() {
 void putc(char c) {
     ecall_wrapper(0x42, (uint64)c);
 }
+
+void initBuffers() {
+    ecall_wrapper(0x43);
+};

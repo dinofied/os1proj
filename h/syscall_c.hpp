@@ -33,6 +33,7 @@ int sem_signal_n(sem_t id, unsigned n);
 
 char getc();
 void putc(char c);
+void initBuffers();
 
 int time_sleep(time_t time);
 

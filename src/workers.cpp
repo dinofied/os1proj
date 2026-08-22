@@ -6,6 +6,15 @@
 #include "../h/tcb.hpp"
 #include "../h/ajmoPrintati.hpp"
 #include "../h/syscall_c.hpp"
+#include "../lib/console.h"
+
+void workerIterate(void* arg) {
+    char c = *(char*)arg;
+    while (1) {
+        putc(c);
+        //__putc('\n');
+    }
+}
 
 void workerBodyA(void* arg)
 {

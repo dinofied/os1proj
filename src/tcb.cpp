@@ -13,7 +13,6 @@ TCB* TCB::createThread(Body body, void* arg, uint64* stack_location) {
 
     TCB* newTcb = new TCB(body, arg, stack_location, DEFAULT_TIME_SLICE);
 
-
     return newTcb;
 };
 
@@ -46,16 +45,19 @@ void TCB::setRunning(TCB *newRunning) {
 }
 
 void bombo() {
+    int mask = 1 << 8;
+    __asm__ volatile("csrs sstatus, %0" : :"r" (mask));
     __asm__ volatile("csrw sepc, ra");
     __asm__ volatile("sret");
 };
 
 void TCB::threadWrapper() {
-    uint64 volatile pc;
-    __asm__ volatile ("auipc %0, 0" : "=r" (pc));
-    pc += 32;
-    __asm__ volatile ("csrw sepc, %0" :: "r" (pc));
-    __asm__ volatile ("sret");
+    // uint64 volatile pc;
+    // __asm__ volatile ("auipc %0, 0" : "=r" (pc));
+    // pc += 32;
+    // __asm__ volatile ("csrw sepc, %0" :: "r" (pc));
+    // __asm__ volatile ("sret");
+    bombo();
     running->body(running->getThreadArg());
     running->setFinished(true);
     TCB::yield();

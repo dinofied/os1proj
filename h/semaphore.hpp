@@ -21,6 +21,8 @@ public:
     void blockCurrentThread(uint64 threadTokens);
     void unblockThread();
 
+    uint64 getItems();
+
     struct tkTCB {
         TCB* tcb;
         uint64 requiredTokens;

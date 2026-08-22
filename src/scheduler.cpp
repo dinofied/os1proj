@@ -3,9 +3,8 @@
 //
 
 #include "../h/scheduler.hpp"
+#include "../lib/console.h"
 #include "../h/tcb.hpp"
-
-#include "../h/ajmoPrintati.hpp"
 
 extern "C" void contextSwitch(TCB::Context* oldContext, TCB::Context* newContext); // from contextSwitch.S
 

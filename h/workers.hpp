@@ -4,6 +4,7 @@
 
 #ifndef PROJECT_BASE_WORKERS_HPP
 #define PROJECT_BASE_WORKERS_HPP
+void workerIterate(void* arg);
 void workerBodyA(void* arg);
 
 void workerBodyB(void* arg);

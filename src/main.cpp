@@ -1,9 +1,9 @@
-#include "../lib/console.h"
 #include "../h/MemoryAllocator.hpp"
 #include "../h/syscall_c.hpp"
 #include "../h/ajmoPrintati.hpp"
 #include "../h/tcb.hpp"
 #include "../h/workers.hpp"
+#include "../h/console.hpp"
 #include "../h/syscall_c.hpp"
 #include "../h/semaphore.hpp"
 
@@ -53,11 +53,20 @@ int myMainTestThread() {
 int myMainTestSem() {
     __asm__ volatile ("csrw stvec, %[vector]" : : [vector] "r" (&supervisorTrap)); //setting interrupt routine
 
-    thread_t* threads[4];
-    for (int i = 0; i < 4; i++) threads[i] = new thread_t;
+    thread_t* threads[11];
+    for (int i = 0; i < 11; i++) threads[i] = new thread_t;
 
     thread_create(threads[0], nullptr, nullptr);
     TCB::setRunning((TCB*)*threads[0]);
+
+    initBuffers();
+
+    //thread_t* inputfella = new thread_t;
+    thread_t* outputfella = new thread_t;
+
+
+    //thread_create(inputfella, Buffer::inputWorker, nullptr);
+    thread_create(outputfella, Buffer::outputWorker, nullptr);
 
     int ret;
 
@@ -79,21 +88,35 @@ int myMainTestSem() {
     if (ret == 0) printajStringBolan("ThreadBB created\n");
     else printajStringBolan("ThreaBB ERROR\n");
 
-    // ret = thread_create(threads[3], workerBodyB, (void*)(*sem));
-    // if (ret == 0) printajStringBolan("ThreadC created\n");
-    // else printajStringBolan("ThreaC ERROR\n");
+
+    char c[10];
+
+    for (int i = 4; i < 11; i++) {
+        c[i - 4] = 'A' + i - 4;
+        thread_create(threads[i], workerIterate, &c[i-4]);
+    }
+
 
 
     __asm__ volatile ("csrs sstatus, 2"); //enabling sie
 
 
-    while (Scheduler::getWaitingThreadCount() > 0) {TCB::yield();};
+    while (Scheduler::getWaitingThreadCount() > 0) {thread_dispatch();};
 
     for (auto &thread: threads)
     {
         delete thread;
     }
     printajStringBolan("Finished\n");
+
+    return 0;
+}
+
+int myMainTestCon() {
+    __asm__ volatile ("csrw stvec, %[vector]" : : [vector] "r" (&supervisorTrap)); //setting interrupt routine
+    Buffer::init();
+
+    printajStringBolan("Radim!");
 
     return 0;
 }

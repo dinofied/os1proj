@@ -9,9 +9,12 @@
 
 
 class Semaphore;
-typedef Semaphore* _sem;
+typedef Semaphore* sem;
 
-static const uint64 BUFF_SIZE = 1024;
+class TCB;
+typedef TCB* tcb;
+
+static const uint64 BUFF_SIZE = 1000000;
 
 class Buffer {
 public:
@@ -21,11 +24,13 @@ public:
     void put(char c);
     char get();
 
-    static void inputWorker();
-    static void outputWorker();
+    static void init();
 
-    static _sem outputSem;
-    static _sem inputSem;
+    static void inputWorker(void*);
+    static void outputWorker(void*);
+
+    static sem outputSem;
+    static sem inputSem;
 
     static Buffer* inputBuffer;
     static Buffer* outputBuffer;
@@ -34,9 +39,11 @@ private:
     uint64 head, tail;
     char items[BUFF_SIZE];
 
-    _sem itemsAvailable;
-    _sem spaceAvailable;
+    sem itemsAvailable;
+    sem spaceAvailable;
 
+    static tcb inputFella;
+    static tcb outputFella;
 };
 
 #endif //PROJECT_BASE_CONSOLE_HPP

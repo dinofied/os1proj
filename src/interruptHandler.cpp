@@ -4,7 +4,6 @@
 #ifndef PROJECT_BASE_INTERRUPT_HANDLER
 #define PROJECT_BASE_INTERRUPT_HANDLER
 
-#include "../lib/console.h"
 #include "../lib/hw.h"
 #include "../h/MemoryAllocator.hpp"
 #include "../h/ajmoPrintati.hpp"
@@ -22,6 +21,7 @@ extern "C" void handleSupervisorTrap() {
     volatile uint64 sepc;
     volatile uint64 opCode;
     volatile uint64 sstatus;
+    volatile uint64 stval;
     __asm__ volatile ("mv %0, a0" : "=r" (opCode));
     __asm__ volatile("mv %0, a1" : "=r" (arg1));
     __asm__ volatile("mv %0, a2" : "=r" (arg2));
@@ -30,50 +30,55 @@ extern "C" void handleSupervisorTrap() {
     __asm__ volatile ("csrr %0, scause" : "=r" (scause));
     __asm__ volatile ("csrr %0, sepc" : "=r" (sepc));
     __asm__ volatile ("csrr %0, sstatus" : "=r" (sstatus));
-
+    __asm__ volatile ("csrr %0, stval" : "=r" (stval));
 
     volatile uint64 ret;
 
 
     switch (scause) {
-        case 0x8000000000000001:
+        case 0x8000000000000001: {
             //timer
             Scheduler::reduceSleepingTime();
             TCB::timeSliceCounter++;
             if (TCB::timeSliceCounter >= TCB::running->getTimeSlice()) {
                 TCB::timeSliceCounter = 0;
                 TCB::dispatch();
-                __asm__ volatile("csrw sepc, %0" : : "r" (sepc));
-                __asm__ volatile("csrw sstatus, %0" : : "r" (sstatus));
             }
             __asm__ volatile ("csrc sip, 2"); //enabling other interrupts
             break;
-        case 0x8000000000000009:
+        }
+        case 0x8000000000000009: {
             //hardware
             int plic = plic_claim();
-            if (plic != 0x0a) {
-                printajStringBolan("Hardware error.");
-                break;
-            }
 
+            //if (!Buffer::inputSem->getItems())Buffer::inputSem->signal();
+            if (!Buffer::outputSem->getItems())Buffer::outputSem->signal();
 
             plic_complete(plic);
-            __asm__ volatile ("csrc sip, 2"); //enabling other interrupts
+            //console_handler();
+            uint64 seip_mask = 1 << 9;
+            __asm__ volatile ("csrc sip, %0" : : "r" (seip_mask)); //enabling other interrupts
             break;
+        }
         case 0x0000000000000002:
             //illegal instruction
             printajStringBolan("0x02 Illegal instruction:");
             printajBrojBolan(sepc);
+            __putc('\n');
             break;
         case 0x0000000000000005:
             //unauthorized memory read
             printajStringBolan("0x05 Unauthorized mem read:");
             printajBrojBolan(sepc);
+            __putc('\n');
             break;
         case 0x0000000000000007:
             //unauthorized memory write
             printajStringBolan("0x07 Unauthorized mem write:");
             printajBrojBolan(sepc);
+            printajStringBolan("Address:");
+            printajBrojBolan(stval);
+            __putc('\n');
             break;
         case 0x0000000000000008:
         case 0x0000000000000009:
@@ -165,13 +170,18 @@ extern "C" void handleSupervisorTrap() {
                     Buffer::outputBuffer->put((char)arg1);
                     break;
                 }
+                //init buffers
+                case 0x43: {
+                    Buffer::init();
+                    break;
+                }
             }
 
             sepc += 4;
-            __asm__ volatile ("csrw sepc, %0" : : "r" (sepc));
-            __asm__ volatile("csrw sstatus, %0" : : "r" (sstatus));
             break;
     }
+    __asm__ volatile ("csrw sepc, %0" : : "r" (sepc));
+    __asm__ volatile("csrw sstatus, %0" : : "r" (sstatus));
     __asm__ volatile("mv a0, %0" : : "r" ((uint64)ret));
 
 };
