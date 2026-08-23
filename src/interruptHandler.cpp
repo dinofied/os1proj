@@ -51,8 +51,10 @@ extern "C" void handleSupervisorTrap() {
             //hardware
             int plic = plic_claim();
 
-            //if (!Buffer::inputSem->getItems())Buffer::inputSem->signal();
-            if (!Buffer::outputSem->getItems())Buffer::outputSem->signal();
+            // if (!Buffer::inputSem->getItems())Buffer::inputSem->signal();
+            // if (!Buffer::outputSem->getItems())Buffer::outputSem->signal();
+            Buffer::outputSem->signal();
+
 
             plic_complete(plic);
             //console_handler();
@@ -180,8 +182,9 @@ extern "C" void handleSupervisorTrap() {
             sepc += 4;
             break;
     }
-    __asm__ volatile ("csrw sepc, %0" : : "r" (sepc));
+    __asm__ volatile("csrw sepc, %0" : : "r" (sepc));
     __asm__ volatile("csrw sstatus, %0" : : "r" (sstatus));
+    __asm__ volatile("csrw scause, %0" : : "r" (scause));
     __asm__ volatile("mv a0, %0" : : "r" ((uint64)ret));
 
 };

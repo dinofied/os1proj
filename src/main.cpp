@@ -61,11 +61,11 @@ int myMainTestSem() {
 
     initBuffers();
 
-    //thread_t* inputfella = new thread_t;
+    thread_t* inputfella = new thread_t;
     thread_t* outputfella = new thread_t;
 
 
-    //thread_create(inputfella, Buffer::inputWorker, nullptr);
+    thread_create(inputfella, Buffer::inputWorker, nullptr);
     thread_create(outputfella, Buffer::outputWorker, nullptr);
 
     int ret;
@@ -73,7 +73,7 @@ int myMainTestSem() {
     sem_t* sem= new sem_t;
     if (sem_open(sem, 3)) {
         printajStringBolan("Semafor otvoren.");
-        __putc('\n');
+        putc('\n');
     };
 
     ret = thread_create(threads[1], workerBodyA, (void*)(*sem));
@@ -89,12 +89,12 @@ int myMainTestSem() {
     else printajStringBolan("ThreaBB ERROR\n");
 
 
-    char c[10];
-
-    for (int i = 4; i < 11; i++) {
-        c[i - 4] = 'A' + i - 4;
-        thread_create(threads[i], workerIterate, &c[i-4]);
-    }
+    // char c[10];
+    //
+    // for (int i = 4; i < 11; i++) {
+    //     c[i - 4] = 'A' + i - 4;
+    //     thread_create(threads[i], workerIterate, &c[i-4]);
+    // }
 
 
 
@@ -112,11 +112,50 @@ int myMainTestSem() {
     return 0;
 }
 
-int myMainTestCon() {
+int myMainTestSem2() {
     __asm__ volatile ("csrw stvec, %[vector]" : : [vector] "r" (&supervisorTrap)); //setting interrupt routine
-    Buffer::init();
 
-    printajStringBolan("Radim!");
+    thread_t* threads[4];
+    for (int i = 0; i < 4; i++) threads[i] = new thread_t;
+
+    thread_create(threads[0], nullptr, nullptr);
+    TCB::setRunning((TCB*)*threads[0]);
+
+    int ret;
+
+    sem_t* sem= new sem_t;
+    if (sem_open(sem, 3)) {
+        printajStringBolan("Semafor otvoren.");
+        putc('\n');
+    };
+
+    ret = thread_create(threads[1], workerBodyA, (void*)(*sem));
+    if (ret == 0) printajStringBolan("ThreadA created\n");
+    else printajStringBolan("ThreaA ERROR\n");
+
+    ret = thread_create(threads[2], workerBodyB, (void*)(*sem));
+    if (ret == 0) printajStringBolan("ThreadB created\n");
+    else printajStringBolan("ThreaB ERROR\n");
+
+    ret = thread_create(threads[3], workerBodyBB, (void*)(*sem));
+    if (ret == 0) printajStringBolan("ThreadBB created\n");
+    else printajStringBolan("ThreaBB ERROR\n");
+
+    // ret = thread_create(threads[3], workerBodyB, (void*)(*sem));
+    // if (ret == 0) printajStringBolan("ThreadC created\n");
+    // else printajStringBolan("ThreaC ERROR\n");
+
+
+    __asm__ volatile ("csrs sstatus, 2"); //enabling sie
+
+
+    while (Scheduler::getWaitingThreadCount() > 0) {TCB::yield();};
+
+    for (auto &thread: threads)
+    {
+        delete thread;
+    }
+    printajStringBolan("Finished\n");
 
     return 0;
 }

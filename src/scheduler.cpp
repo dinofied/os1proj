@@ -4,6 +4,7 @@
 
 #include "../h/scheduler.hpp"
 #include "../lib/console.h"
+#include "../h/MemoryAllocator.hpp"
 #include "../h/tcb.hpp"
 
 extern "C" void contextSwitch(TCB::Context* oldContext, TCB::Context* newContext); // from contextSwitch.S
@@ -47,8 +48,11 @@ int Scheduler::putToSleep(uint64 sleepTime) {
 }
 
 void Scheduler::insertIntoList(TCB *tcb, uint64 sleepTime) {
-    sleepingThread* toSleep = new sleepingThread(tcb, sleepTime);
+    sleepingThread* toSleep = (sleepingThread*)MemoryAllocator::getInstance().
+    mem_alloc(sizeof(sleepingThread) / MEM_BLOCK_SIZE + (sizeof(sleepingThread) / MEM_BLOCK_SIZE) ? 1 : 0);
 
+    toSleep->tcb = tcb;
+    toSleep->remainingSleep = sleepTime;
     if (!head) {
         head = toSleep;
         return;
@@ -86,6 +90,6 @@ void Scheduler::reduceSleepingTime() {
         Scheduler::putThread(head->tcb);
         sleepingThread* toDel = head;
         head = head->next;
-        delete toDel;
+        MemoryAllocator::getInstance().mem_free(toDel);
     }
 }

@@ -5,11 +5,16 @@
 #include "../h/semaphore.hpp"
 #include "../h/ajmoPrintati.hpp"
 #include "../h/syscall_c.hpp"
+#include "../h/MemoryAllocator.hpp"
 
 extern "C" void contextSwitch(TCB::Context* oldContext, TCB::Context* newContext); // from contextSwitch.S
 
 Semaphore* Semaphore::createSemaphore(uint64 tokenCount) {
-    Semaphore* newSem = new Semaphore(tokenCount);
+    Semaphore* newSem = (Semaphore*)MemoryAllocator::getInstance().
+    mem_alloc(sizeof(Semaphore) / MEM_BLOCK_SIZE + (sizeof(Semaphore) % MEM_BLOCK_SIZE ? 1 : 0));
+    newSem->remainingTokens = tokenCount;
+    newSem->isClosed = false;
+
     return newSem;
 };
 
@@ -63,7 +68,7 @@ int Semaphore::close() {
     while (semBlockedThreads.peekFirst()) {
         tkTCB* curr = semBlockedThreads.removeFirst();
         Scheduler::putThread(curr->tcb);
-        delete curr;
+        MemoryAllocator::getInstance().mem_free(curr);
     };
     __asm__ volatile ("csrw sstatus, %0" :: "r" (sstatus));
     return 0;
@@ -71,7 +76,10 @@ int Semaphore::close() {
 
 void Semaphore::blockCurrentThread(uint64 threadTokens) {
     TCB* oldTCB = TCB::running;
-    tkTCB* newTkTCB = new tkTCB(oldTCB, threadTokens);
+    tkTCB* newTkTCB = (tkTCB*)MemoryAllocator::getInstance().
+    mem_alloc(sizeof(tkTCB) / MEM_BLOCK_SIZE + (sizeof(tkTCB) % MEM_BLOCK_SIZE ? 1 : 0));
+    newTkTCB->tcb = oldTCB;
+    newTkTCB->requiredTokens = threadTokens;
     semBlockedThreads.addLast(newTkTCB);
     blockedThreadCount++;
     TCB::running = Scheduler::getNextThread();
@@ -88,7 +96,7 @@ void Semaphore::unblockThread() {
     remainingTokens -= blocked->requiredTokens;
 
     blockedThreadCount--;
-    delete blocked;
+    MemoryAllocator::getInstance().mem_free(blocked);
     Scheduler::putThread(blockedTCB);
 };
 

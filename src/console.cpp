@@ -39,7 +39,7 @@ void Buffer::outputWorker(void*) {
 
 void Buffer::init() {
     outputSem = Semaphore::createSemaphore(1);
-    //inputSem = Semaphore::createSemaphore(1);
+    inputSem = Semaphore::createSemaphore(1);
 
     inputBuffer = new Buffer();
     outputBuffer = new Buffer();

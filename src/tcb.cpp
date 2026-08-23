@@ -2,6 +2,7 @@
 // Created by os on 8/11/26.
 //
 #include "../h/tcb.hpp"
+#include "../h/MemoryAllocator.hpp"
 #include "../h/ajmoPrintati.hpp"
 
 TCB* TCB::running = nullptr;
@@ -45,8 +46,8 @@ void TCB::setRunning(TCB *newRunning) {
 }
 
 void bombo() {
-    int mask = 1 << 8;
-    __asm__ volatile("csrs sstatus, %0" : :"r" (mask));
+    // int mask = 1 << 8;
+    // __asm__ volatile("csrc sstatus, %0" : :"r" (mask));
     __asm__ volatile("csrw sepc, ra");
     __asm__ volatile("sret");
 };
