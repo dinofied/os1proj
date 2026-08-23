@@ -10,11 +10,12 @@
 extern "C" void contextSwitch(TCB::Context* oldContext, TCB::Context* newContext); // from contextSwitch.S
 
 Semaphore* Semaphore::createSemaphore(uint64 tokenCount) {
-    Semaphore* newSem = (Semaphore*)MemoryAllocator::getInstance().
-    mem_alloc(sizeof(Semaphore) / MEM_BLOCK_SIZE + (sizeof(Semaphore) % MEM_BLOCK_SIZE ? 1 : 0));
-    newSem->remainingTokens = tokenCount;
-    newSem->isClosed = false;
+    // Semaphore* newSem = (Semaphore*)MemoryAllocator::getInstance().
+    // mem_alloc(sizeof(Semaphore) / MEM_BLOCK_SIZE + (sizeof(Semaphore) % MEM_BLOCK_SIZE ? 1 : 0));
+    // newSem->remainingTokens = tokenCount;
+    // newSem->isClosed = false;
 
+    Semaphore* newSem = new Semaphore(tokenCount);
     return newSem;
 };
 
@@ -68,7 +69,8 @@ int Semaphore::close() {
     while (semBlockedThreads.peekFirst()) {
         tkTCB* curr = semBlockedThreads.removeFirst();
         Scheduler::putThread(curr->tcb);
-        MemoryAllocator::getInstance().mem_free(curr);
+        //MemoryAllocator::getInstance().mem_free(curr);
+        delete curr;
     };
     __asm__ volatile ("csrw sstatus, %0" :: "r" (sstatus));
     return 0;
@@ -76,10 +78,11 @@ int Semaphore::close() {
 
 void Semaphore::blockCurrentThread(uint64 threadTokens) {
     TCB* oldTCB = TCB::running;
-    tkTCB* newTkTCB = (tkTCB*)MemoryAllocator::getInstance().
-    mem_alloc(sizeof(tkTCB) / MEM_BLOCK_SIZE + (sizeof(tkTCB) % MEM_BLOCK_SIZE ? 1 : 0));
-    newTkTCB->tcb = oldTCB;
-    newTkTCB->requiredTokens = threadTokens;
+    // tkTCB* newTkTCB = (tkTCB*)MemoryAllocator::getInstance().
+    // mem_alloc(sizeof(tkTCB) / MEM_BLOCK_SIZE + (sizeof(tkTCB) % MEM_BLOCK_SIZE ? 1 : 0));
+    // newTkTCB->tcb = oldTCB;
+    // newTkTCB->requiredTokens = threadTokens;
+    tkTCB*  newTkTCB = new tkTCB(oldTCB, threadTokens);
     semBlockedThreads.addLast(newTkTCB);
     blockedThreadCount++;
     TCB::running = Scheduler::getNextThread();
@@ -96,7 +99,8 @@ void Semaphore::unblockThread() {
     remainingTokens -= blocked->requiredTokens;
 
     blockedThreadCount--;
-    MemoryAllocator::getInstance().mem_free(blocked);
+    //MemoryAllocator::getInstance().mem_free(blocked);
+    delete blocked;
     Scheduler::putThread(blockedTCB);
 };
 

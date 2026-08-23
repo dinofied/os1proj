@@ -48,11 +48,12 @@ int Scheduler::putToSleep(uint64 sleepTime) {
 }
 
 void Scheduler::insertIntoList(TCB *tcb, uint64 sleepTime) {
-    sleepingThread* toSleep = (sleepingThread*)MemoryAllocator::getInstance().
-    mem_alloc(sizeof(sleepingThread) / MEM_BLOCK_SIZE + (sizeof(sleepingThread) / MEM_BLOCK_SIZE) ? 1 : 0);
-
-    toSleep->tcb = tcb;
-    toSleep->remainingSleep = sleepTime;
+    // sleepingThread* toSleep = (sleepingThread*)MemoryAllocator::getInstance().
+    // mem_alloc(sizeof(sleepingThread) / MEM_BLOCK_SIZE + (sizeof(sleepingThread) / MEM_BLOCK_SIZE) ? 1 : 0);
+    //
+    // toSleep->tcb = tcb;
+    // toSleep->remainingSleep = sleepTime;
+    sleepingThread* toSleep = new sleepingThread(tcb, sleepTime);
     if (!head) {
         head = toSleep;
         return;
@@ -90,6 +91,7 @@ void Scheduler::reduceSleepingTime() {
         Scheduler::putThread(head->tcb);
         sleepingThread* toDel = head;
         head = head->next;
-        MemoryAllocator::getInstance().mem_free(toDel);
+        //MemoryAllocator::getInstance().mem_free(toDel);
+        delete toDel;
     }
 }
