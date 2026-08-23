@@ -71,20 +71,20 @@ int myMainTestSem() {
     int ret;
 
     sem_t* sem= new sem_t;
-    if (sem_open(sem, 3)) {
+    if (!sem_open(sem, 3)) {
         printajStringBolan("Semafor otvoren.");
         putc('\n');
     };
 
-    ret = thread_create(threads[1], workerBodyA, (void*)(*sem));
+    ret = thread_create(threads[1], workerBodyA, nullptr);
     if (ret == 0) printajStringBolan("ThreadA created\n");
     else printajStringBolan("ThreaA ERROR\n");
 
-    ret = thread_create(threads[2], workerBodyB, (void*)(*sem));
+    ret = thread_create(threads[2], workerBodyB, nullptr);
     if (ret == 0) printajStringBolan("ThreadB created\n");
     else printajStringBolan("ThreaB ERROR\n");
 
-    ret = thread_create(threads[3], workerBodyBB, (void*)(*sem));
+    ret = thread_create(threads[3], workerBodyBB, nullptr);
     if (ret == 0) printajStringBolan("ThreadBB created\n");
     else printajStringBolan("ThreaBB ERROR\n");
 
@@ -124,7 +124,7 @@ int myMainTestSem2() {
     int ret;
 
     sem_t* sem= new sem_t;
-    if (sem_open(sem, 3)) {
+    if (sem_open(sem, 0)) {
         printajStringBolan("Semafor otvoren.");
         putc('\n');
     };
@@ -140,10 +140,6 @@ int myMainTestSem2() {
     ret = thread_create(threads[3], workerBodyBB, (void*)(*sem));
     if (ret == 0) printajStringBolan("ThreadBB created\n");
     else printajStringBolan("ThreaBB ERROR\n");
-
-    // ret = thread_create(threads[3], workerBodyB, (void*)(*sem));
-    // if (ret == 0) printajStringBolan("ThreadC created\n");
-    // else printajStringBolan("ThreaC ERROR\n");
 
 
     __asm__ volatile ("csrs sstatus, 2"); //enabling sie

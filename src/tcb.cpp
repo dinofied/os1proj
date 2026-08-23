@@ -3,6 +3,7 @@
 //
 #include "../h/tcb.hpp"
 #include "../h/MemoryAllocator.hpp"
+#include "../h/newdelete.hpp"
 #include "../h/ajmoPrintati.hpp"
 
 TCB* TCB::running = nullptr;

@@ -18,11 +18,11 @@ void workerIterate(void* arg) {
 
 void workerBodyA(void* arg)
 {
-    sem_t sem = (sem_t)arg;
+    //sem_t sem = (sem_t)arg;
 
     for (uint64 i = 0; i < 10; i++)
     {
-        if (sem) sem_wait_n(sem, 1);
+        //if (sem) sem_wait_n(sem, 1);
         printajStringBolan("A: i=");
         printajBrojBolan(i);
         printajStringBolan("\n");
@@ -34,16 +34,16 @@ void workerBodyA(void* arg)
             }
 //            TCB::yield();
         }
-        if (sem) sem_signal_n(sem, 1);
+        //if (sem) sem_signal_n(sem, 1);
     }
 }
 
 void workerBodyB(void* arg)
 {
-    sem_t sem = (sem_t)arg;
+    //sem_t sem = (sem_t)arg;
     for (uint64 i = 0; i < 16; i++)
     {
-        if (sem) sem_wait_n(sem, 2);
+        //if (sem) sem_wait_n(sem, 2);
         printajStringBolan("B: i=");
         printajBrojBolan(i);
         printajStringBolan("\n");
@@ -55,16 +55,16 @@ void workerBodyB(void* arg)
             }
 //            TCB::yield();
         }
-        if (sem) sem_signal_n(sem, 2);
+        //if (sem) sem_signal_n(sem, 2);
     }
 }
 
 void workerBodyBB(void* arg)
 {
-    sem_t sem = (sem_t)arg;
+    //sem_t sem = (sem_t)arg;
     for (uint64 i = 0; i < 16; i++)
     {
-        if (sem) sem_wait_n(sem, 3);
+        //if (sem) sem_wait_n(sem, 3);
         printajStringBolan("BB: i=");
         printajBrojBolan(i);
         printajStringBolan("\n");
@@ -76,7 +76,7 @@ void workerBodyBB(void* arg)
             }
             //            TCB::yield();
         }
-        if (sem) sem_signal_n(sem, 3);
+        //if (sem) sem_signal_n(sem, 3);
     }
 }
 

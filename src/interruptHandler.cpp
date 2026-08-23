@@ -51,9 +51,8 @@ extern "C" void handleSupervisorTrap() {
             //hardware
             int plic = plic_claim();
 
-            // if (!Buffer::inputSem->getItems())Buffer::inputSem->signal();
-            // if (!Buffer::outputSem->getItems())Buffer::outputSem->signal();
-            Buffer::outputSem->signal();
+            if (!Buffer::inputSem->getItems())Buffer::inputSem->signal();
+            if (!Buffer::outputSem->getItems())Buffer::outputSem->signal();
 
 
             plic_complete(plic);
@@ -74,7 +73,7 @@ extern "C" void handleSupervisorTrap() {
             printajBrojBolan(sepc);
             __putc('\n');
             break;
-        case 0x0000000000000007:
+        case 0x0000000000000007: {
             //unauthorized memory write
             printajStringBolan("0x07 Unauthorized mem write:");
             printajBrojBolan(sepc);
@@ -82,8 +81,9 @@ extern "C" void handleSupervisorTrap() {
             printajBrojBolan(stval);
             __putc('\n');
             break;
+        }
         case 0x0000000000000008:
-        case 0x0000000000000009:
+        case 0x0000000000000009: {
 
 
             switch (opCode) {
@@ -181,12 +181,13 @@ extern "C" void handleSupervisorTrap() {
 
             sepc += 4;
             break;
+        }
     }
+
     __asm__ volatile("csrw sepc, %0" : : "r" (sepc));
     __asm__ volatile("csrw sstatus, %0" : : "r" (sstatus));
     __asm__ volatile("csrw scause, %0" : : "r" (scause));
     __asm__ volatile("mv a0, %0" : : "r" ((uint64)ret));
-
 };
 
 #endif

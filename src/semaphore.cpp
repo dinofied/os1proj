@@ -5,6 +5,7 @@
 #include "../h/semaphore.hpp"
 #include "../h/ajmoPrintati.hpp"
 #include "../h/syscall_c.hpp"
+#include "../h/newdelete.hpp"
 #include "../h/MemoryAllocator.hpp"
 
 extern "C" void contextSwitch(TCB::Context* oldContext, TCB::Context* newContext); // from contextSwitch.S
