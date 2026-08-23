@@ -63,23 +63,26 @@ extern "C" void handleSupervisorTrap() {
         }
         case 0x0000000000000002:
             //illegal instruction
+            sepc += 4;
             printajStringBolan("0x02 Illegal instruction:");
             printajBrojBolan(sepc);
-            __putc('\n');
+            //__putc('\n');
             break;
         case 0x0000000000000005:
             //unauthorized memory read
+            sepc += 4;
             printajStringBolan("0x05 Unauthorized mem read:");
             printajBrojBolan(sepc);
-            __putc('\n');
+            //__putc('\n');
             break;
         case 0x0000000000000007: {
             //unauthorized memory write
+            sepc += 4;
             printajStringBolan("0x07 Unauthorized mem write:");
             printajBrojBolan(sepc);
             printajStringBolan("Address:");
             printajBrojBolan(stval);
-            __putc('\n');
+            //__putc('\n');
             break;
         }
         case 0x0000000000000008:
