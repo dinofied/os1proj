@@ -4,6 +4,7 @@
 
 #include "../h/console.hpp"
 #include "../h/semaphore.hpp"
+#include "../h/syscall_c.hpp"
 #include "../h/tcb.hpp"
 
 sem Buffer::outputSem = nullptr;
@@ -17,10 +18,10 @@ tcb Buffer::outputFella = nullptr;
 
 void Buffer::inputWorker(void*) {
     while (1) {
-        inputSem->wait();
+        sem_wait((sem_t)inputSem);
         while (*((uint8*)CONSOLE_STATUS) & CONSOLE_RX_STATUS_BIT) {
-            // char c = (char) *((char*)CONSOLE_RX_DATA);
-            // inputBuffer->put(c);
+            char c = (char) *((char*)CONSOLE_RX_DATA);
+            inputBuffer->put(c);
         }
 
     };
@@ -28,13 +29,17 @@ void Buffer::inputWorker(void*) {
 
 void Buffer::outputWorker(void*) {
     while (1) {
-        outputSem->wait();
+        sem_wait((sem_t)outputSem);
         while (*((uint8*)CONSOLE_STATUS) & CONSOLE_TX_STATUS_BIT) {
             char c = outputBuffer->get();
             *((char*)CONSOLE_TX_DATA) = c;
         }
 
     };
+}
+
+void Buffer::idleWorker(void *) {
+    while (1) {thread_dispatch();}
 }
 
 void Buffer::init() {
@@ -56,18 +61,33 @@ Buffer::Buffer() {
     spaceAvailable = Semaphore::createSemaphore(BUFF_SIZE);
 }
 
+// void Buffer::put(char c) {
+//     spaceAvailable->wait();
+//     items[tail++] = c;
+//     tail = tail % BUFF_SIZE;
+//     itemsAvailable->signal();
+// }
+//
+// char Buffer::get() {
+//     itemsAvailable->wait();
+//     char c = items[head++];
+//     head = head % BUFF_SIZE;
+//     spaceAvailable->signal();
+//     return c;
+// }
+
+
 void Buffer::put(char c) {
-    spaceAvailable->wait();
+    sem_wait((sem_t)spaceAvailable);
     items[tail++] = c;
     tail = tail % BUFF_SIZE;
-    itemsAvailable->signal();
+    sem_signal((sem_t)itemsAvailable);
 }
 
 char Buffer::get() {
-    itemsAvailable->wait();
+    sem_wait((sem_t)itemsAvailable);
     char c = items[head++];
     head = head % BUFF_SIZE;
-    spaceAvailable->signal();
+    sem_signal((sem_t)spaceAvailable);
     return c;
 }
-

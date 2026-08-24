@@ -63,10 +63,11 @@ int myMainTestSem() {
 
     thread_t* inputfella = new thread_t;
     thread_t* outputfella = new thread_t;
-
+    thread_t* idleFella = new thread_t;
 
     thread_create(inputfella, Buffer::inputWorker, nullptr);
     thread_create(outputfella, Buffer::outputWorker, nullptr);
+    thread_create(idleFella, Buffer::idleWorker, nullptr);
 
     int ret;
 
@@ -88,13 +89,15 @@ int myMainTestSem() {
     if (ret == 0) printajStringBolan("ThreadBB created\n");
     else printajStringBolan("ThreaBB ERROR\n");
 
+    printajStringBolan("c\n");
+    ret++;
 
-    // char c[10];
-    //
-    // for (int i = 4; i < 11; i++) {
-    //     c[i - 4] = 'A' + i - 4;
-    //     thread_create(threads[i], workerIterate, &c[i-4]);
-    // }
+    char c[10];
+
+    for (int i = 4; i < 11; i++) {
+        c[i - 4] = 'A' + i - 4;
+        thread_create(threads[i], workerIterate, &c[i-4]);
+    }
 
 
 

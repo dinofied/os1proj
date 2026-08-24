@@ -28,6 +28,7 @@ public:
 
     static void inputWorker(void*);
     static void outputWorker(void*);
+    static void idleWorker(void*);
 
     static sem outputSem;
     static sem inputSem;

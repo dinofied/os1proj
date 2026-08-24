@@ -63,10 +63,12 @@ public:
 
     static void dispatch();
 
+    static void initMainThread();
+
 private:
     explicit TCB(Body body, void* arg, uint64* stack_location, uint64 timeSlice) :
         body(body),
-        stack(stack_location == nullptr ? new uint64[DEFAULT_STACK_SIZE] : stack_location),
+        stack(stack_location == nullptr ? new uint8[DEFAULT_STACK_SIZE] : (uint8*)stack_location),
         arg(arg),
         finished(false),
         timeSlice(timeSlice)
@@ -77,7 +79,7 @@ private:
     }
 
     Body body;
-    uint64* stack;
+    uint8* stack;
     void* arg;
     bool finished;
     uint64 timeSlice;

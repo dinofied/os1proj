@@ -10,8 +10,10 @@
 
 void workerIterate(void* arg) {
     char c = *(char*)arg;
+    uint64 counter = 0;
     while (1) {
-        putc(c);
+        counter++;
+        if (counter % 10000000 == 0) putc(c);
         //__putc('\n');
     }
 }

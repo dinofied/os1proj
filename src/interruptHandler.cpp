@@ -11,6 +11,7 @@
 #include "../h/semaphore.hpp"
 #include "../h/scheduler.hpp"
 #include "../h/console.hpp"
+#include "../h/syscall_c.hpp"
 #include "../h/newdelete.hpp"
 
 extern "C" void supervisorTrap();
@@ -51,8 +52,8 @@ extern "C" void handleSupervisorTrap() {
             //hardware
             int plic = plic_claim();
 
-            if (!Buffer::inputSem->getItems())Buffer::inputSem->signal();
-            if (!Buffer::outputSem->getItems())Buffer::outputSem->signal();
+            if (!Buffer::inputSem->getItems())sem_signal((sem_t)Buffer::inputSem);
+            if (!Buffer::outputSem->getItems())sem_signal((sem_t)Buffer::outputSem);
 
 
             plic_complete(plic);
@@ -66,14 +67,14 @@ extern "C" void handleSupervisorTrap() {
             sepc += 4;
             printajStringBolan("0x02 Illegal instruction:");
             printajBrojBolan(sepc);
-            //__putc('\n');
+            putc('\n');
             break;
         case 0x0000000000000005:
             //unauthorized memory read
             sepc += 4;
             printajStringBolan("0x05 Unauthorized mem read:");
             printajBrojBolan(sepc);
-            //__putc('\n');
+            putc('\n');
             break;
         case 0x0000000000000007: {
             //unauthorized memory write
@@ -82,7 +83,7 @@ extern "C" void handleSupervisorTrap() {
             printajBrojBolan(sepc);
             printajStringBolan("Address:");
             printajBrojBolan(stval);
-            //__putc('\n');
+            putc('\n');
             break;
         }
         case 0x0000000000000008:
