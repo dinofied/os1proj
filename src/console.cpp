@@ -15,6 +15,7 @@ Buffer* Buffer::outputBuffer = nullptr;
 
 tcb Buffer::inputFella = nullptr;
 tcb Buffer::outputFella = nullptr;
+tcb Buffer::idleFella = nullptr;
 
 void Buffer::inputWorker(void*) {
     while (1) {
@@ -49,8 +50,9 @@ void Buffer::init() {
     inputBuffer = new Buffer();
     outputBuffer = new Buffer();
 
-    //inputFella = TCB::createThread((void(*)(void*))inputWorker, nullptr, nullptr);
-    //outputFella = TCB::createThread((void(*)(void*))outputWorker, nullptr, nullptr);
+    inputFella = TCB::createThread((void(*)(void*))inputWorker, nullptr, nullptr);
+    outputFella = TCB::createThread((void(*)(void*))outputWorker, nullptr, nullptr);
+    idleFella = TCB::createThread((void(*)(void*))idleWorker, nullptr, nullptr);
 }
 
 Buffer::Buffer() {

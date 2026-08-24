@@ -61,15 +61,16 @@ int myMainTestSem() {
 
     initBuffers();
 
-    thread_t* inputfella = new thread_t;
-    thread_t* outputfella = new thread_t;
-    thread_t* idleFella = new thread_t;
+    // thread_t* inputfella = new thread_t;
+    // thread_t* outputfella = new thread_t;
+    // thread_t* idleFella = new thread_t;
+    //
+    // thread_create(inputfella, Buffer::inputWorker, nullptr);
+    // thread_create(outputfella, Buffer::outputWorker, nullptr);
+    // thread_create(idleFella, Buffer::idleWorker, nullptr);
+    __asm__ volatile ("csrs sstatus, 2"); //enabling sie
 
-    thread_create(inputfella, Buffer::inputWorker, nullptr);
-    thread_create(outputfella, Buffer::outputWorker, nullptr);
-    thread_create(idleFella, Buffer::idleWorker, nullptr);
-
-    int ret;
+    int ret = 0;
 
     sem_t* sem= new sem_t;
     if (!sem_open(sem, 3)) {
@@ -89,8 +90,6 @@ int myMainTestSem() {
     if (ret == 0) printajStringBolan("ThreadBB created\n");
     else printajStringBolan("ThreaBB ERROR\n");
 
-    printajStringBolan("c\n");
-    ret++;
 
     char c[10];
 
@@ -99,9 +98,6 @@ int myMainTestSem() {
         thread_create(threads[i], workerIterate, &c[i-4]);
     }
 
-
-
-    __asm__ volatile ("csrs sstatus, 2"); //enabling sie
 
 
     while (Scheduler::getWaitingThreadCount() > 0) {thread_dispatch();};

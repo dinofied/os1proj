@@ -45,6 +45,7 @@ private:
 
     static tcb inputFella;
     static tcb outputFella;
+    static tcb idleFella;
 };
 
 #endif //PROJECT_BASE_CONSOLE_HPP
