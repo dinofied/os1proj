@@ -7,17 +7,17 @@
 #include "../h/syscall_c.hpp"
 #include "../h/tcb.hpp"
 
-sem Buffer::outputSem = nullptr;
-sem Buffer::inputSem = nullptr;
+sem charBuffer::outputSem = nullptr;
+sem charBuffer::inputSem = nullptr;
 
-Buffer* Buffer::inputBuffer = nullptr;
-Buffer* Buffer::outputBuffer = nullptr;
+charBuffer* charBuffer::inputBuffer = nullptr;
+charBuffer* charBuffer::outputBuffer = nullptr;
 
-tcb Buffer::inputFella = nullptr;
-tcb Buffer::outputFella = nullptr;
-tcb Buffer::idleFella = nullptr;
+tcb charBuffer::inputFella = nullptr;
+tcb charBuffer::outputFella = nullptr;
+tcb charBuffer::idleFella = nullptr;
 
-void Buffer::inputWorker(void*) {
+void charBuffer::inputWorker(void*) {
     while (1) {
         sem_wait((sem_t)inputSem);
         while (*((uint8*)CONSOLE_STATUS) & CONSOLE_RX_STATUS_BIT) {
@@ -28,7 +28,7 @@ void Buffer::inputWorker(void*) {
     };
 }
 
-void Buffer::outputWorker(void*) {
+void charBuffer::outputWorker(void*) {
     while (1) {
         sem_wait((sem_t)outputSem);
         while (*((uint8*)CONSOLE_STATUS) & CONSOLE_TX_STATUS_BIT) {
@@ -39,23 +39,23 @@ void Buffer::outputWorker(void*) {
     };
 }
 
-void Buffer::idleWorker(void *) {
+void charBuffer::idleWorker(void *) {
     while (1) {thread_dispatch();}
 }
 
-void Buffer::init() {
+void charBuffer::init() {
     outputSem = Semaphore::createSemaphore(1);
     inputSem = Semaphore::createSemaphore(1);
 
-    inputBuffer = new Buffer();
-    outputBuffer = new Buffer();
+    inputBuffer = new charBuffer();
+    outputBuffer = new charBuffer();
 
     inputFella = TCB::createThread((void(*)(void*))inputWorker, nullptr, nullptr);
     outputFella = TCB::createThread((void(*)(void*))outputWorker, nullptr, nullptr);
     idleFella = TCB::createThread((void(*)(void*))idleWorker, nullptr, nullptr);
 }
 
-Buffer::Buffer() {
+charBuffer::charBuffer() {
     head = 0;
     tail = 0;
     items[0] = '\0';
@@ -63,14 +63,14 @@ Buffer::Buffer() {
     spaceAvailable = Semaphore::createSemaphore(BUFF_SIZE);
 }
 
-void Buffer::put(char c) {
+void charBuffer::put(char c) {
     sem_wait((sem_t)spaceAvailable);
     items[tail++] = c;
     tail = tail % BUFF_SIZE;
     sem_signal((sem_t)itemsAvailable);
 }
 
-char Buffer::get() {
+char charBuffer::get() {
     sem_wait((sem_t)itemsAvailable);
     char c = items[head++];
     head = head % BUFF_SIZE;

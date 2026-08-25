@@ -23,9 +23,9 @@ void workerBodyA(void* arg)
     for (uint64 i = 0; i < 10; i++)
     {
         //if (sem) sem_wait_n(sem, 1);
-        printString("A: i=");
-        printNumber(i);
-        printString("\n");
+        _printString("A: i=");
+        _printNumber(i);
+        _printString("\n");
         for (uint64 j = 0; j < 10000; j++)
         {
             for (uint64 k = 0; k < 30000; k++)
@@ -44,9 +44,9 @@ void workerBodyB(void* arg)
     for (uint64 i = 0; i < 16; i++)
     {
         //if (sem) sem_wait_n(sem, 2);
-        printString("B: i=");
-        printNumber(i);
-        printString("\n");
+        _printString("B: i=");
+        _printNumber(i);
+        _printString("\n");
         for (uint64 j = 0; j < 10000; j++)
         {
             for (uint64 k = 0; k < 30000; k++)
@@ -65,9 +65,9 @@ void workerBodyBB(void* arg)
     for (uint64 i = 0; i < 16; i++)
     {
         //if (sem) sem_wait_n(sem, 3);
-        printString("BB: i=");
-        printNumber(i);
-        printString("\n");
+        _printString("BB: i=");
+        _printNumber(i);
+        _printString("\n");
         for (uint64 j = 0; j < 10000; j++)
         {
             for (uint64 k = 0; k < 30000; k++)
@@ -92,32 +92,32 @@ void workerBodyC(void* arg)
     uint8 i = 0;
     for (; i < 3; i++)
     {
-        printString("C: i=");
-        printNumber(i);
-        printString("\n");
+        _printString("C: i=");
+        _printNumber(i);
+        _printString("\n");
     }
 
-    printString("C: yield\n");
+    _printString("C: yield\n");
     __asm__ ("li t1, 7");
     TCB::yield();
 
     uint64 t1 = 0;
     __asm__ ("mv %[t1], t1" : [t1] "=r"(t1));
 
-    printString("C: t1=");
-    printNumber(t1);
-    printString("\n");
+    _printString("C: t1=");
+    _printNumber(t1);
+    _printString("\n");
 
     uint64 result = fibonacci(12);
-    printString("C: fibonaci=");
-    printNumber(result);
-    printString("\n");
+    _printString("C: fibonaci=");
+    _printNumber(result);
+    _printString("\n");
 
     for (; i < 6; i++)
     {
-        printString("C: i=");
-        printNumber(i);
-        printString("\n");
+        _printString("C: i=");
+        _printNumber(i);
+        _printString("\n");
     }
 //    TCB::yield();
 }
@@ -127,25 +127,25 @@ void workerBodyD(void* arg)
     uint8 i = 10;
     for (; i < 13; i++)
     {
-        printString("D: i=");
-        printNumber(i);
-        printString("\n");
+        _printString("D: i=");
+        _printNumber(i);
+        _printString("\n");
     }
 
-    printString("D: yield\n");
+    _printString("D: yield\n");
     __asm__ ("li t1, 5");
     TCB::yield();
 
     uint64 result = fibonacci(16);
-    printString("D: fibonaci=");
-    printNumber(result);
-    printString("\n");
+    _printString("D: fibonaci=");
+    _printNumber(result);
+    _printString("\n");
 
     for (; i < 16; i++)
     {
-        printString("D: i=");
-        printNumber(i);
-        printString("\n");
+        _printString("D: i=");
+        _printNumber(i);
+        _printString("\n");
     }
 //    TCB::yield();
 

@@ -51,8 +51,8 @@ extern "C" void handleSupervisorTrap() {
             //hardware
             int plic = plic_claim();
 
-            if (!Buffer::inputSem->getItems())sem_signal((sem_t)Buffer::inputSem);
-            if (!Buffer::outputSem->getItems())sem_signal((sem_t)Buffer::outputSem);
+            if (!charBuffer::inputSem->getItems())sem_signal((sem_t)charBuffer::inputSem);
+            if (!charBuffer::outputSem->getItems())sem_signal((sem_t)charBuffer::outputSem);
 
 
             plic_complete(plic);
@@ -64,24 +64,24 @@ extern "C" void handleSupervisorTrap() {
         case 0x0000000000000002:
             //illegal instruction
             sepc += 4;
-            printString("0x02 Illegal instruction:");
-            printNumber(sepc);
+            _printString("0x02 Illegal instruction:");
+            _printNumber(sepc);
             putc('\n');
             break;
         case 0x0000000000000005:
             //unauthorized memory read
             sepc += 4;
-            printString("0x05 Unauthorized mem read:");
-            printNumber(sepc);
+            _printString("0x05 Unauthorized mem read:");
+            _printNumber(sepc);
             putc('\n');
             break;
         case 0x0000000000000007: {
             //unauthorized memory write
             sepc += 4;
-            printString("0x07 Unauthorized mem write:");
-            printNumber(sepc);
-            printString("Address:");
-            printNumber(stval);
+            _printString("0x07 Unauthorized mem write:");
+            _printNumber(sepc);
+            _printString("Address:");
+            _printNumber(stval);
             putc('\n');
             break;
         }
@@ -167,17 +167,17 @@ extern "C" void handleSupervisorTrap() {
                 }
                 //get_c
                 case 0x41: {
-                    ret = Buffer::inputBuffer->get();
+                    ret = charBuffer::inputBuffer->get();
                     break;
                 }
                 //put_c
                 case 0x42: {
-                    Buffer::outputBuffer->put((char)arg1);
+                    charBuffer::outputBuffer->put((char)arg1);
                     break;
                 }
                 //init buffers
                 case 0x43: {
-                    Buffer::init();
+                    charBuffer::init();
                     break;
                 }
             }

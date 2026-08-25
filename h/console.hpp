@@ -16,10 +16,10 @@ typedef TCB* tcb;
 
 static const uint64 BUFF_SIZE = 1000000;
 
-class Buffer {
+class charBuffer {
 public:
 
-    Buffer();
+    charBuffer();
 
     void put(char c);
     char get();
@@ -33,8 +33,8 @@ public:
     static sem outputSem;
     static sem inputSem;
 
-    static Buffer* inputBuffer;
-    static Buffer* outputBuffer;
+    static charBuffer* inputBuffer;
+    static charBuffer* outputBuffer;
 
 private:
     uint64 head, tail;

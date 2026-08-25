@@ -4,7 +4,7 @@
 #include "../h/printFunctions.hpp"
 #include "../h/syscall_c.hpp"
 
-void printNumber(uint64 number) {
+void _printNumber(uint64 number) {
     char arr[64];
 
     int id = 0;
@@ -23,7 +23,7 @@ void printNumber(uint64 number) {
 }
 
 
-void printString(const char *string) {
+void _printString(const char *string) {
     while (*string != '\0') {
         putc(*string);
         string++;

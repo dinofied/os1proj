@@ -63,8 +63,6 @@ public:
 
     static void dispatch();
 
-    static void initMainThread();
-
 private:
     explicit TCB(Body body, void* arg, uint64* stack_location, uint64 timeSlice) :
         body(body),

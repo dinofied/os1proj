@@ -85,7 +85,7 @@ int MemoryAllocator::tryToJoinChunks(MemoryChunk* chunk) {
 void MemoryAllocator::printFreeChunks() {
     MemoryChunk* surfer = freeMemChunks;
     while (surfer) {
-        printNumber((uint64)surfer);
+        _printNumber((uint64)surfer);
         surfer = surfer->next;
     }
 };
