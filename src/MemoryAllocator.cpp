@@ -1,5 +1,5 @@
 #include "../h/MemoryAllocator.hpp"
-#include "../h/ajmoPrintati.hpp"
+#include "../h/printFunctions.hpp"
 
 //MemoryAllocator MemoryAllocator::instance;
 
@@ -85,7 +85,7 @@ int MemoryAllocator::tryToJoinChunks(MemoryChunk* chunk) {
 void MemoryAllocator::printFreeChunks() {
     MemoryChunk* surfer = freeMemChunks;
     while (surfer) {
-        printajBrojBolan((uint64)surfer);
+        printNumber((uint64)surfer);
         surfer = surfer->next;
     }
 };

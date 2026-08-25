@@ -3,8 +3,6 @@
 //
 #include "../h/tcb.hpp"
 #include "../h/MemoryAllocator.hpp"
-#include "../h/newdelete.hpp"
-#include "../h/ajmoPrintati.hpp"
 
 TCB* TCB::running = nullptr;
 uint64 TCB::timeSliceCounter = 0;
@@ -54,11 +52,6 @@ void bombo() {
 };
 
 void TCB::threadWrapper() {
-    // uint64 volatile pc;
-    // __asm__ volatile ("auipc %0, 0" : "=r" (pc));
-    // pc += 32;
-    // __asm__ volatile ("csrw sepc, %0" :: "r" (pc));
-    // __asm__ volatile ("sret");
     bombo();
     running->body(running->getThreadArg());
     running->setFinished(true);

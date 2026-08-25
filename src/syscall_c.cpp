@@ -3,8 +3,6 @@
 //
 
 #include "../h/syscall_c.hpp"
-#include "../h/MemoryAllocator.hpp"
-#include "../h/ajmoPrintati.hpp"
 
 uint64 ecall_wrapper (uint64 opcode, uint64 a1, uint64 a2,uint64 a3, uint64 a4) {
     __asm__ volatile ("ecall");

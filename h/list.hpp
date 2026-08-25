@@ -4,7 +4,6 @@
 
 #ifndef PROJECT_BASE_LIST_HPP
 #define PROJECT_BASE_LIST_HPP
-#include "ajmoPrintati.hpp"
 
 template<typename T>
 class List

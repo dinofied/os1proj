@@ -6,13 +6,12 @@
 
 #include "../lib/hw.h"
 #include "../h/MemoryAllocator.hpp"
-#include "../h/ajmoPrintati.hpp"
+#include "../h/printFunctions.hpp"
 #include "../h/tcb.hpp"
 #include "../h/semaphore.hpp"
 #include "../h/scheduler.hpp"
 #include "../h/console.hpp"
 #include "../h/syscall_c.hpp"
-#include "../h/newdelete.hpp"
 
 extern "C" void supervisorTrap();
 
@@ -65,24 +64,24 @@ extern "C" void handleSupervisorTrap() {
         case 0x0000000000000002:
             //illegal instruction
             sepc += 4;
-            printajStringBolan("0x02 Illegal instruction:");
-            printajBrojBolan(sepc);
+            printString("0x02 Illegal instruction:");
+            printNumber(sepc);
             putc('\n');
             break;
         case 0x0000000000000005:
             //unauthorized memory read
             sepc += 4;
-            printajStringBolan("0x05 Unauthorized mem read:");
-            printajBrojBolan(sepc);
+            printString("0x05 Unauthorized mem read:");
+            printNumber(sepc);
             putc('\n');
             break;
         case 0x0000000000000007: {
             //unauthorized memory write
             sepc += 4;
-            printajStringBolan("0x07 Unauthorized mem write:");
-            printajBrojBolan(sepc);
-            printajStringBolan("Address:");
-            printajBrojBolan(stval);
+            printString("0x07 Unauthorized mem write:");
+            printNumber(sepc);
+            printString("Address:");
+            printNumber(stval);
             putc('\n');
             break;
         }

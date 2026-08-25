@@ -2,7 +2,6 @@
 #define PROJECT_BASE_MEMORYALLOCATOR_HPP
 
 #include "../lib/hw.h"
-#include "../lib/console.h"
 
 class MemoryAllocator {
 public:

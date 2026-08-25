@@ -4,9 +4,8 @@
 
 #include "../lib/hw.h"
 #include "../h/tcb.hpp"
-#include "../h/ajmoPrintati.hpp"
+#include "../h/printFunctions.hpp"
 #include "../h/syscall_c.hpp"
-#include "../lib/console.h"
 
 void workerIterate(void* arg) {
     char c = *(char*)arg;
@@ -14,7 +13,6 @@ void workerIterate(void* arg) {
     while (1) {
         counter++;
         if (counter % 10000000 == 0) putc(c);
-        //__putc('\n');
     }
 }
 
@@ -25,9 +23,9 @@ void workerBodyA(void* arg)
     for (uint64 i = 0; i < 10; i++)
     {
         //if (sem) sem_wait_n(sem, 1);
-        printajStringBolan("A: i=");
-        printajBrojBolan(i);
-        printajStringBolan("\n");
+        printString("A: i=");
+        printNumber(i);
+        printString("\n");
         for (uint64 j = 0; j < 10000; j++)
         {
             for (uint64 k = 0; k < 30000; k++)
@@ -46,9 +44,9 @@ void workerBodyB(void* arg)
     for (uint64 i = 0; i < 16; i++)
     {
         //if (sem) sem_wait_n(sem, 2);
-        printajStringBolan("B: i=");
-        printajBrojBolan(i);
-        printajStringBolan("\n");
+        printString("B: i=");
+        printNumber(i);
+        printString("\n");
         for (uint64 j = 0; j < 10000; j++)
         {
             for (uint64 k = 0; k < 30000; k++)
@@ -67,9 +65,9 @@ void workerBodyBB(void* arg)
     for (uint64 i = 0; i < 16; i++)
     {
         //if (sem) sem_wait_n(sem, 3);
-        printajStringBolan("BB: i=");
-        printajBrojBolan(i);
-        printajStringBolan("\n");
+        printString("BB: i=");
+        printNumber(i);
+        printString("\n");
         for (uint64 j = 0; j < 10000; j++)
         {
             for (uint64 k = 0; k < 30000; k++)
@@ -94,32 +92,32 @@ void workerBodyC(void* arg)
     uint8 i = 0;
     for (; i < 3; i++)
     {
-        printajStringBolan("C: i=");
-        printajBrojBolan(i);
-        printajStringBolan("\n");
+        printString("C: i=");
+        printNumber(i);
+        printString("\n");
     }
 
-    printajStringBolan("C: yield\n");
+    printString("C: yield\n");
     __asm__ ("li t1, 7");
     TCB::yield();
 
     uint64 t1 = 0;
     __asm__ ("mv %[t1], t1" : [t1] "=r"(t1));
 
-    printajStringBolan("C: t1=");
-    printajBrojBolan(t1);
-    printajStringBolan("\n");
+    printString("C: t1=");
+    printNumber(t1);
+    printString("\n");
 
     uint64 result = fibonacci(12);
-    printajStringBolan("C: fibonaci=");
-    printajBrojBolan(result);
-    printajStringBolan("\n");
+    printString("C: fibonaci=");
+    printNumber(result);
+    printString("\n");
 
     for (; i < 6; i++)
     {
-        printajStringBolan("C: i=");
-        printajBrojBolan(i);
-        printajStringBolan("\n");
+        printString("C: i=");
+        printNumber(i);
+        printString("\n");
     }
 //    TCB::yield();
 }
@@ -129,25 +127,25 @@ void workerBodyD(void* arg)
     uint8 i = 10;
     for (; i < 13; i++)
     {
-        printajStringBolan("D: i=");
-        printajBrojBolan(i);
-        printajStringBolan("\n");
+        printString("D: i=");
+        printNumber(i);
+        printString("\n");
     }
 
-    printajStringBolan("D: yield\n");
+    printString("D: yield\n");
     __asm__ ("li t1, 5");
     TCB::yield();
 
     uint64 result = fibonacci(16);
-    printajStringBolan("D: fibonaci=");
-    printajBrojBolan(result);
-    printajStringBolan("\n");
+    printString("D: fibonaci=");
+    printNumber(result);
+    printString("\n");
 
     for (; i < 16; i++)
     {
-        printajStringBolan("D: i=");
-        printajBrojBolan(i);
-        printajStringBolan("\n");
+        printString("D: i=");
+        printNumber(i);
+        printString("\n");
     }
 //    TCB::yield();
 

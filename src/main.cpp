@@ -1,11 +1,7 @@
-#include "../h/MemoryAllocator.hpp"
 #include "../h/syscall_c.hpp"
-#include "../h/ajmoPrintati.hpp"
+#include "../h/printFunctions.hpp"
 #include "../h/tcb.hpp"
 #include "../h/workers.hpp"
-#include "../h/console.hpp"
-#include "../h/syscall_c.hpp"
-#include "../h/semaphore.hpp"
 
 extern "C" void supervisorTrap();
 
@@ -21,20 +17,20 @@ int myMainTestThread() {
     int ret;
 
     ret = thread_create(threads[1], workerBodyA, nullptr);
-    if (ret == 0) printajStringBolan("ThreadA created\n");
-    else printajStringBolan("ThreaA ERROR\n");
+    if (ret == 0) printString("ThreadA created\n");
+    else printString("ThreaA ERROR\n");
 
     ret = thread_create(threads[2], workerBodyB, nullptr);
-    if (ret == 0) printajStringBolan("ThreadB created\n");
-    else printajStringBolan("ThreaB ERROR\n");
+    if (ret == 0) printString("ThreadB created\n");
+    else printString("ThreaB ERROR\n");
 
     ret = thread_create(threads[3], workerBodyC, nullptr);
-    if (ret == 0) printajStringBolan("ThreadC created\n");
-    else printajStringBolan("ThreaC ERROR\n");
+    if (ret == 0) printString("ThreadC created\n");
+    else printString("ThreaC ERROR\n");
 
     ret = thread_create(threads[4], workerBodyD, nullptr);
-    if (ret == 0) printajStringBolan("ThreadD created\n");
-    else printajStringBolan("ThreaD ERROR\n");
+    if (ret == 0) printString("ThreadD created\n");
+    else printString("ThreaD ERROR\n");
 
     __asm__ volatile ("csrs sstatus, 2"); //enabling sie
 
@@ -45,7 +41,7 @@ int myMainTestThread() {
     {
         delete thread;
     }
-    printajStringBolan("Finished\n");
+    printString("Finished\n");
 
     return 0;
 }
@@ -61,34 +57,27 @@ int myMainTestSem() {
 
     initBuffers();
 
-    // thread_t* inputfella = new thread_t;
-    // thread_t* outputfella = new thread_t;
-    // thread_t* idleFella = new thread_t;
-    //
-    // thread_create(inputfella, Buffer::inputWorker, nullptr);
-    // thread_create(outputfella, Buffer::outputWorker, nullptr);
-    // thread_create(idleFella, Buffer::idleWorker, nullptr);
     __asm__ volatile ("csrs sstatus, 2"); //enabling sie
 
     int ret = 0;
 
     sem_t* sem= new sem_t;
     if (!sem_open(sem, 3)) {
-        printajStringBolan("Semafor otvoren.");
+        printString("Semafor otvoren.");
         putc('\n');
     };
 
     ret = thread_create(threads[1], workerBodyA, nullptr);
-    if (ret == 0) printajStringBolan("ThreadA created\n");
-    else printajStringBolan("ThreaA ERROR\n");
+    if (ret == 0) printString("ThreadA created\n");
+    else printString("ThreaA ERROR\n");
 
     ret = thread_create(threads[2], workerBodyB, nullptr);
-    if (ret == 0) printajStringBolan("ThreadB created\n");
-    else printajStringBolan("ThreaB ERROR\n");
+    if (ret == 0) printString("ThreadB created\n");
+    else printString("ThreaB ERROR\n");
 
     ret = thread_create(threads[3], workerBodyBB, nullptr);
-    if (ret == 0) printajStringBolan("ThreadBB created\n");
-    else printajStringBolan("ThreaBB ERROR\n");
+    if (ret == 0) printString("ThreadBB created\n");
+    else printString("ThreaBB ERROR\n");
 
 
     char c[10];
@@ -106,7 +95,7 @@ int myMainTestSem() {
     {
         delete thread;
     }
-    printajStringBolan("Finished\n");
+    printString("Finished\n");
 
     return 0;
 }
@@ -124,21 +113,21 @@ int myMainTestSem2() {
 
     sem_t* sem= new sem_t;
     if (sem_open(sem, 0)) {
-        printajStringBolan("Semafor otvoren.");
+        printString("Semafor otvoren.");
         putc('\n');
     };
 
     ret = thread_create(threads[1], workerBodyA, (void*)(*sem));
-    if (ret == 0) printajStringBolan("ThreadA created\n");
-    else printajStringBolan("ThreaA ERROR\n");
+    if (ret == 0) printString("ThreadA created\n");
+    else printString("ThreaA ERROR\n");
 
     ret = thread_create(threads[2], workerBodyB, (void*)(*sem));
-    if (ret == 0) printajStringBolan("ThreadB created\n");
-    else printajStringBolan("ThreaB ERROR\n");
+    if (ret == 0) printString("ThreadB created\n");
+    else printString("ThreaB ERROR\n");
 
     ret = thread_create(threads[3], workerBodyBB, (void*)(*sem));
-    if (ret == 0) printajStringBolan("ThreadBB created\n");
-    else printajStringBolan("ThreaBB ERROR\n");
+    if (ret == 0) printString("ThreadBB created\n");
+    else printString("ThreaBB ERROR\n");
 
 
     __asm__ volatile ("csrs sstatus, 2"); //enabling sie
@@ -150,7 +139,7 @@ int myMainTestSem2() {
     {
         delete thread;
     }
-    printajStringBolan("Finished\n");
+    printString("Finished\n");
 
     return 0;
 }

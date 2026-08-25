@@ -3,9 +3,9 @@
 
 #include "../lib/hw.h"
 
-void printajBrojBolan(uint64 number);
+void printNumber(uint64 number);
 
-void printajStringBolan(const char *string);
+void printString(const char *string);
 
 void printNumber(uint64 number);
 
