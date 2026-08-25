@@ -53,6 +53,7 @@ void charBuffer::init() {
     inputFella = TCB::createThread((void(*)(void*))inputWorker, nullptr, nullptr);
     outputFella = TCB::createThread((void(*)(void*))outputWorker, nullptr, nullptr);
     idleFella = TCB::createThread((void(*)(void*))idleWorker, nullptr, nullptr);
+
 }
 
 charBuffer::charBuffer() {

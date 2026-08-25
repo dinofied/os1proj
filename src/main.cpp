@@ -64,26 +64,32 @@ int myTest() {
 
 extern void userMain();
 
-void userWrapper(void*) {
+void userWrapper(void* arg) {
     userMain();
+    sem_t mutex = (sem_t)arg;
+    sem_signal(mutex);
 }
 
 
 int main() {
     __asm__ volatile ("csrw stvec, %[vector]" : : [vector] "r" (&supervisorTrap)); //setting interrupt routine
 
+
     thread_t* kernelThread = new thread_t;
     thread_create(kernelThread, nullptr, nullptr);
     TCB::setRunning((TCB*)*kernelThread);
+
+    sem_t* mutex = new sem_t;
+    sem_open(mutex, 1);
 
     initBuffers();
 
     __asm__ volatile ("csrs sstatus, 2"); //enabling sie
 
     thread_t* userMain = new thread_t;
-    thread_create(userMain, userWrapper, nullptr);
+    thread_create(userMain, userWrapper, mutex);
 
-
+    sem_wait_n(*mutex, 2);
 
     return 0;
 }
